@@ -1,0 +1,32 @@
+$bgcolor: #ffffff;
+$color: #ffffff;
+
+/**common base style */
+html{width: 100%; height: 100%;}
+body{ 
+    min-width: 1200px;
+    margin:0;padding:0;
+    background-color: $bgcolor;
+    font-family: arial,'Hiragino Sans GB','Microsoft Yahei','微软雅黑','宋体',Tahoma, '\5b8b\4f53',Arial,Helvetica;
+    font-size: 14px;
+}
+p, h1, h2, h3, ul, li{
+    margin:0;
+}
+li{list-style: none; }
+html,body{
+    width: 100%;
+    height: 100%;
+}
+a{
+   border: none;
+   text-decoration: none;
+   outline-style: none;
+   cursor: pointer;
+}
+a:focus{outline: none}
+a:active,a:hover{outline: 0}
+img{ border: 0 none;}
+input{outline: none;border: none;}
+.clrfix{zoom:1;}
+.clrfix:after{ content: "";display: block;clear: both; }
