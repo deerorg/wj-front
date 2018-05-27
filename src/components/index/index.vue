@@ -4,7 +4,9 @@
             <div class="header">
                 <div class="header-wrapper clrfix">
                     <div class="logo fl">
-                        <h2>问卷管家</h2>
+                        <router-link to="/">
+                            <h2 class="fc">问卷管家</h2>
+                        </router-link>
                     </div>
                     <ul class="nav"></ul>
                     <ul class="user-entry fr">

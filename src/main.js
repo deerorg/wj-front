@@ -4,8 +4,16 @@ import 'babel-polyfill'
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import { Form, FormItem, Input, Checkbox, Button } from 'element-ui'
 import 'normalize.css'
 import 'common/scss/base.scss'
+import 'common/scss/element-ui.scss'
+
+Vue.use(Form)
+Vue.use(FormItem)
+Vue.use(Input)
+Vue.use(Checkbox)
+Vue.use(Button)
 
 Vue.config.productionTip = false
 

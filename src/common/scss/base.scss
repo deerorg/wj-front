@@ -2,7 +2,7 @@ $bgcolor: #ffffff;
 $color: #ffffff;
 
 /**common base style */
-html{width: 100%; height: 100%;}
+html{width: 100%; }
 body{ 
     min-width: 1200px;
     margin:0;padding:0;
@@ -16,7 +16,6 @@ p, h1, h2, h3, ul, li{
 li{list-style: none; }
 html,body{
     width: 100%;
-    height: 100%;
 }
 a{
    border: none;

@@ -1,12 +1,12 @@
 $bgcolor: #ffffff;
 $color: #ffffff;
-$maincolor: #18d26e;
+$maincolor: #409EFF;
 $bgimgurl: '../../common/img/';
 
 .fl{float: left;}
 .fr{float: right;}
 .fc{ color: $color}
-
+.fm{ color: $maincolor}
 @mixin center($width:null,$height:null){
     position: absolute;
             top: 50%;
