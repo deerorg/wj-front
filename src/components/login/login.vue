@@ -2,7 +2,7 @@
     <div class="login">
         <div class="logo">
             <router-link to="/">
-                <h2 class="fm">问卷管家</h2>
+                <h2 class="fm logo-text">问卷管家</h2>
             </router-link>
         </div>
         <div class="form">
@@ -18,7 +18,7 @@
                     <span class="login-text fr">忘记密码？</span>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" round @click.native.prevent="login" class="login-btn">登录</el-button>
+                    <el-button type="primary" round @click.native.prevent="login" class="login-btn"  :loading="logining">登录</el-button>
                 </el-form-item>
                 <div class="text-wrap"> 
                     还没账号？
@@ -57,6 +57,7 @@ export default {
         return{
             labelPosition: 'top',
             isRememberPsd: true,
+            logining: false,
             loginForm: {
                 loginName:'',
                 pwd:''
@@ -75,8 +76,29 @@ export default {
         login(){
             this.$refs.loginForm.validate((valid) => {
             if (valid) {
+                this.logining = true
                 Login(this.loginForm).then((res) => {
-                    console.log(res.msg)
+                    this.logining = false
+                    const { success, msg, data } = res
+                    if (success) {
+                        if (data.user.roleIds.length <= 0) {
+                            me.$message.info("用户无权登录系统, 请联系管理员")
+                        }
+                        else{
+                            // 本地记住密码（cookie）
+                            // 提示登录成功
+                            this.$message({
+                                message: '登录成功',
+                                type: 'success'
+                            });
+                            // 将取得的用户信息本地及vuex保存起来(用户名，用户id, token)
+                            // 跳转路由
+                            this.$router.push('/usermanagement')
+                         }
+                    }
+                    else {
+                       this.$message.error(res.msg)
+                    }
                 })  
             } else {
                 return false
@@ -90,8 +112,11 @@ export default {
 <style lang="scss" scoped>
 @import 'common/scss/common.scss';
 .logo{
+    height: 75px;
     margin-left: 75px;
-    margin-top: 35px;
+}
+.logo-text{
+    padding-top: 35px;
 }
 .form{
      @include center(400px, 400px); 

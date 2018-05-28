@@ -13,6 +13,7 @@ const portfinder = require('portfinder')
 const express = require('express')
 const axios = require('axios')
 const app = express()
+const querystring = require('querystring')
 const apiRoutes = express.Router()
 app.use('/api', apiRoutes)
 
@@ -52,7 +53,18 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     before (app) {
       app.get('/api/login', function (req, res) {
         var url = 'http://39.108.55.120:8089/api/mblogin'
-        axios.post(url, req.query, {
+        axios.post(url, querystring.stringify(req.query), {
+            referer: 'http://120.79.11.68:9999/',
+            host: '39.108.55.120:8089'
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+           console.log(e)
+        })
+      }),
+      app.get('/api/checklogin', function(){
+        var url = 'http://39.108.55.120:8089/api/checkUserOnline'
+        axios.get(url, {
           headers:{
             referer: 'http://120.79.11.68:9999/',
             host: '39.108.55.120:8089'

@@ -43,7 +43,14 @@
 
 <script>
 export default {
-    
+    data () {
+        return {
+
+        }
+    },
+    created () {
+
+    }
 }
 </script>
 
@@ -91,7 +98,7 @@ export default {
 .entry-btn{
     margin-left: 10px;
     font-size: 18px;
-    padding: 2px 30px;
+    padding: 0 30px;
     line-height: 36px;
     border: 2px  $maincolor solid;
     &:hover{background-color: $maincolor;}
