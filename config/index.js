@@ -12,11 +12,11 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/api/': {
-        target: 'http://39.108.55.120:8089/', // 例如： http://api.xxx.com
+        target: 'http://39.108.55.120:8089/',
         changeOrigin: true,
         pathRewrite: {
             '^/api/': '/api/'
-      }
+        }
      }
     },
 

@@ -4,6 +4,7 @@ import 'babel-polyfill'
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import bus from './store/bus'
 import { Form, FormItem, Input, Checkbox, Button, Message } from 'element-ui'
 import 'normalize.css'
 import 'common/scss/base.scss'
@@ -18,6 +19,7 @@ Vue.use(Button)
 Vue.config.productionTip = false
 Vue.prototype.$message = Message
 Vue.use(require('vue-wechat-title'))
+Vue.prototype.$bus = bus
 
 /* eslint-disable no-new */
 new Vue({

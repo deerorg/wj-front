@@ -33,8 +33,13 @@
 
 <script>
 import { REG } from 'common/js/validat'
-import { Login } from 'api/login'
+import { Login, checkLoginState } from 'api/login'
 export default {
+    //  beforeRouteEnter (to, from, next) {
+    //     checkLoginState().then((res) => {
+    //         console.log(res)
+    //     })
+    // },
     data() {
         let validatePsd = (rule, value, callback) => {
             if (value === '') {
@@ -90,7 +95,7 @@ export default {
                             this.$message({
                                 message: '登录成功',
                                 type: 'success'
-                            });
+                            })
                             // 将取得的用户信息本地及vuex保存起来(用户名，用户id, token)
                             // 跳转路由
                             this.$router.push('/usermanagement')
