@@ -10,13 +10,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const portfinder = require('portfinder')
 
-// const express = require('express')
-// const axios = require('axios')
-// const app = express()
-// const querystring = require('querystring')
-// const apiRoutes = express.Router()
-// app.use('/api', apiRoutes)
-
 const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
 
@@ -49,28 +42,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     quiet: true, // necessary for FriendlyErrorsPlugin
     watchOptions: {
       poll: config.dev.poll,
-    },
-    // before (app) {
-    //   app.get('/api/login', function (req, res) {
-    //     var url = 'http://39.108.55.120:8089/api/mblogin'
-    //     axios.post(url, querystring.stringify(req.query), {
-    //         referer: 'http://120.79.11.68:9999/',
-    //         host: '39.108.55.120:8089'
-    //     }).then((response) => {
-    //       res.json(response.data)
-    //     }).catch((e) => {
-    //        console.log(e)
-    //     })
-    //   }),
-    //   app.get('/api/checklogin', function(req, res){
-    //     var url = 'http://39.108.55.120:8089/api/checkUserOnline'
-    //     fetch.get(url).then((response) => {
-    //       res.json(response.data)
-    //     }).catch((e) => {
-    //        console.log(e)
-    //     })
-    //   })
-    // }
+    }
   },
   plugins: [
     new webpack.DefinePlugin({

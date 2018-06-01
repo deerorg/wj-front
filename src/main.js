@@ -5,7 +5,7 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import bus from './store/bus'
-import { Form, FormItem, Input, Checkbox, Button, Message } from 'element-ui'
+import { Form, FormItem, Input, Checkbox, Button, Message, Submenu, Menu, MenuItem, Icon } from 'element-ui'
 import 'normalize.css'
 import 'common/scss/base.scss'
 import 'common/scss/element-ui.scss'
@@ -15,6 +15,10 @@ Vue.use(FormItem)
 Vue.use(Input)
 Vue.use(Checkbox)
 Vue.use(Button)
+Vue.use(Menu)
+Vue.use(Submenu)
+Vue.use(MenuItem)
+Vue.use(Icon)
 
 Vue.config.productionTip = false
 Vue.prototype.$message = Message

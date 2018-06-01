@@ -9,7 +9,7 @@
                         </router-link>
                     </div>
                     <ul class="nav"></ul>
-                    <ul class="user-entry fr">
+                    <ul class="user-entry fr" v-if="!isLogin">
                         <li class="entry-btn btn fl">
                             <router-link to="/login">
                                 <span class="fc">登录</span>
@@ -21,9 +21,9 @@
                             </router-link>
                         </li>
                     </ul>
-                    <div class="user-entry fr" style="display:none">
+                    <div class="user-entry fr" v-if="isLogin">
                         <div class="entry-btn btn">
-                            <router-link to="/login">
+                            <router-link to="/usermanagement">
                                 <span class="fc">进入管理系统</span>
                             </router-link>
                         </div>
@@ -42,14 +42,22 @@
 </template>
 
 <script>
+import { checkLoginState } from 'api/login'
+import { getToken } from 'store/store'
 export default {
-    data () {
-        return {
-
+    created() {
+        if (getToken()) {
+          checkLoginState().then((res) => {
+            if(res.data.data === null && res.data.success) {
+                this.isLogin = true
+            } 
+          })
         }
     },
-    created () {
-
+    data () {
+        return {
+            isLogin: false
+        }
     }
 }
 </script>

@@ -34,12 +34,20 @@
 <script>
 import { REG } from 'common/js/validat'
 import { Login, checkLoginState } from 'api/login'
+import { setUser, getToken } from 'store/store'
 export default {
-    //  beforeRouteEnter (to, from, next) {
-    //     checkLoginState().then((res) => {
-    //         console.log(res)
-    //     })
-    // },
+     beforeRouteEnter (to, from, next) {
+        if(getToken()) {
+          checkLoginState().then((res) => {
+            if(res.data.data === null && res.data.success) {
+                next('/')
+            } else { next() }
+          })
+        } else {
+            next()
+        }
+        
+    },
     data() {
         let validatePsd = (rule, value, callback) => {
             if (value === '') {
@@ -91,12 +99,11 @@ export default {
                         }
                         else{
                             // 本地记住密码（cookie）
-                            // 提示登录成功
                             this.$message({
                                 message: '登录成功',
                                 type: 'success'
                             })
-                            // 将取得的用户信息本地及vuex保存起来(用户名，用户id, token)
+                            setUser(data.user.userName, data.token, data.user.id)
                             // 跳转路由
                             this.$router.push('/usermanagement')
                          }
