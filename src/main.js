@@ -9,6 +9,7 @@ import { Form, FormItem, Input, Checkbox, Button, Message, Submenu, Menu, MenuIt
 import 'normalize.css'
 import 'common/scss/base.scss'
 import 'common/scss/element-ui.scss'
+import 'font-awesome/css/font-awesome.min.css'
 
 Vue.use(Form)
 Vue.use(FormItem)
