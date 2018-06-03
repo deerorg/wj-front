@@ -1,36 +1,74 @@
 <template>
     <div class="main-system">
-        <div class="contain">
             <div class="head clrfix">
-                <div class="logo fl">
-                    <router-link to="/">
-                        <h2 class="fm logo-text">问卷管家</h2>
-                    </router-link>
+                <div class="head-contain">
+                    <div class="logo fl">
+                        <router-link to="/">
+                            <h2 class="fc logo-text">问卷管家</h2>
+                        </router-link>
+                    </div>
+                    <el-menu :default-active="activeIndex"  mode="horizontal" active-text-color='#fff' text-color='#fff' background-color='#409EFF' class="fr menu-bar">
+                        <el-menu-item index="1"><i class="fa fa-home menu-icon"></i><span>我的问卷</span></el-menu-item>
+                        <el-submenu index="2">
+                            <template slot="title"><i class="fa fa-user-circle-o menu-icon"></i><span>{{username}}</span></template>
+                            <el-menu-item index="2-1">个人信息</el-menu-item>
+                            <el-menu-item index="2-2">意见反馈</el-menu-item>
+                            <el-menu-item index="2-3">帮助</el-menu-item>
+                        </el-submenu>
+                        <el-menu-item index="3"><i class="fa fa-bell menu-icon" style="font-size: 22px"></i><span>消息</span></el-menu-item>
+                        <el-menu-item index="4" @click="_logout"><i class="fa fa-power-off menu-icon"></i><span>退出</span></el-menu-item>
+                    </el-menu>
                 </div>
-                <el-menu :default-active="activeIndex"  mode="horizontal" active-text-color='#409EFF' class="fr menu-bar">
-                    <el-menu-item index="1"><i class="fa fa-home menu-icon"></i>我的问卷</el-menu-item>
-                    <el-submenu index="2">
-                        <template slot="title">用户中心</template>
-                        <el-menu-item index="2-1">个人信息</el-menu-item>
-                        <el-menu-item index="2-2">意见反馈</el-menu-item>
-                        <el-menu-item index="2-3">退出</el-menu-item>
-                    </el-submenu>
-                    <el-menu-item index="3">消息</el-menu-item>
-                    <el-menu-item index="4">帮助</el-menu-item>
-                </el-menu>
             </div>
-            <div class="mian">
-
+            <div class="contain">
+                <div class="mian">
+                    <router-view></router-view>
+                </div>
             </div>
-        </div>
     </div>
 </template>
 
 <script>
+import { getName, getToken } from 'store/store'
+import { checkLoginState, logout } from 'api/login'
 export default {
+    beforeRouteEnter (to, from, next) {
+        if(getToken()) {
+          checkLoginState().then((res) => {
+            if(res.data.data === null && res.data.success) {
+                next()
+            } else { next('/login') }
+          })
+        } else {
+           next('/login')
+        }  
+    },
     data() {
         return {
-            activeIndex: '1'
+            activeIndex: '1',
+            username: ''
+        }
+    },
+    created() {
+        this.username = getName()
+    },
+    methods:{
+        _logout(){
+            console.log( this.activeIndex)
+            this.$confirm('您即将退出, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+               // 退出并回到主页及刷新及删除存储的数据
+            }).catch(() => {
+                console.log( this.activeIndex)
+                this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                })         
+            })
+        
         }
     }
 }
@@ -38,24 +76,37 @@ export default {
 
 <style lang="scss" scoped>
 @import 'common/scss/common.scss';
+$colorbybg: #ffffff;
 .contain{
     width: $minwidth;
     margin: 0 auto;
 }
+.head{
+    width: 100%;
+    background: $maincolor;
+}
+.head-contain{
+    width: $minwidth;
+    margin: 0 auto;
+}
 .logo{
-    height: 75px;
+    height: 60px;
     margin-left: 15px;
 }
 .logo-text{
-    padding-top: 25px;
+    line-height: 60px;
 }
 .menu-bar{
 border-bottom: 0px;
 }
 .menu-icon{
-    font-size: 28px;
-    padding-right: 8px;
-   line-height: 40px;
+   font-size: 24px;
+   margin-right: 5px;
+   line-height: 60px;
+   color: $colorbybg;
+}
+.el-submenu__title  i{ 
+    color: $colorbybg !important;
 }
 </style>
 

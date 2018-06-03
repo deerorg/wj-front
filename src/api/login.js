@@ -14,3 +14,15 @@ export function checkLoginState () {
     return Promise.resolve(res)
   })
 }
+
+export function logout (id) {
+  const url = '/logout'
+  const data = {
+    uid: id
+  }
+  return service.get(url, {
+    params: data
+  }).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}

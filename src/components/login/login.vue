@@ -36,7 +36,7 @@ import { REG } from 'common/js/validat'
 import { Login, checkLoginState } from 'api/login'
 import { setUser, getToken } from 'store/store'
 export default {
-     beforeRouteEnter (to, from, next) {
+    beforeRouteEnter (to, from, next) {
         if(getToken()) {
           checkLoginState().then((res) => {
             if(res.data.data === null && res.data.success) {
@@ -45,8 +45,7 @@ export default {
           })
         } else {
             next()
-        }
-        
+        }  
     },
     data() {
         let validatePsd = (rule, value, callback) => {
