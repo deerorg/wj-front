@@ -100,9 +100,11 @@ export default {
                             // 本地记住密码（cookie）
                             this.$message({
                                 message: '登录成功',
-                                type: 'success'
+                                type: 'success',
+                                duration: 2 * 1000
                             })
                             setUser(data.user.userName, data.token, data.user.id)
+                            // loding
                             // 跳转路由
                             this.$router.push('/usermanagement')
                          }

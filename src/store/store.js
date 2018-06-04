@@ -24,7 +24,7 @@ export function getToken () {
 }
 
 export function getId () {
-  return bus.user.id ? bus.user.name : Cookies.get('id')
+  return bus.user.id ? bus.user.id : Cookies.get('id')
 }
 
 export function deleName () {
@@ -50,7 +50,7 @@ export function setUser (name, token, id) {
 
 export function deleUser () {
   deleName()
-  deleName()
+  deleToken()
   deleId()
 }
 // 设置cookie,登录名 name, id, token,（分开）

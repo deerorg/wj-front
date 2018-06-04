@@ -27,7 +27,7 @@ Vue.prototype.$msgbox = MessageBox
 Vue.prototype.$confirm = MessageBox.confirm
 Vue.use(require('vue-wechat-title'))
 Vue.prototype.$bus = bus
-
+window.router = router
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

@@ -45,13 +45,13 @@ service.interceptors.response.use(
       })
     } else if (error.response && error.response.status === 500 &&
         (error.response.data.message === 'LOGOUT' || error.response.data.message === 'TOKEN_ERROR')) {
+      localStorage.clear()
+      deleUser()
       Message({
         message: '用户已退出, 请重新登录',
         type: 'error',
         duration: 3 * 1000
       })
-      localStorage.clear()
-      deleUser()
       window.router.push('/login')
     } else if (error.response && error.response.status === 200 && error.response.data === 'FORCE_LOGIN') { // api 接口 或返回 ReLogin的处理 用户强制退出
       localStorage.clear()
