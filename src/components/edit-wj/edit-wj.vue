@@ -1,6 +1,6 @@
 <template>
-    <div class="message">
-        个人消息列表,还未开发
+    <div class="edit-wj">
+        编辑问卷： 新建问卷/已有问卷
     </div>
 </template>
 
@@ -11,5 +11,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import 'common/scss/common.scss';
 
 </style>
+

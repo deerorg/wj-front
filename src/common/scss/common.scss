@@ -3,10 +3,18 @@ $color: #ffffff;
 $maincolor: #409EFF;
 $bgimgurl: '../../common/img/';
 $minwidth: 1200px;
+$topmargin: 40px;
+$lightcolor: #949494;
 .fl{float: left;}
 .fr{float: right;}
 .fc{ color: $color}
 .fm{ color: $maincolor}
+.textcut{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 @mixin center($width:null,$height:null){
     position: absolute;
             top: 50%;
@@ -28,3 +36,4 @@ $minwidth: 1200px;
         transform: translateY(-50%); 
     }
 }
+

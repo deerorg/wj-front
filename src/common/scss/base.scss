@@ -30,3 +30,9 @@ img{ border: 0 none;}
 input{outline: none;border: none;}
 .clrfix{zoom:1;}
 .clrfix:after{ content: "";display: block;clear: both; }
+
+
+// 修改element-ui默认样式
+.el-submenu__title i {
+    color: #ffffff !important;
+}

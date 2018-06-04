@@ -34,7 +34,7 @@
 <script>
 import { REG } from 'common/js/validat'
 import { Login, checkLoginState } from 'api/login'
-import { setUser, getToken } from 'store/store'
+import { setUser, getToken, storeUserInfor } from 'store/store'
 export default {
     beforeRouteEnter (to, from, next) {
         if(getToken()) {
@@ -61,7 +61,7 @@ export default {
                 if (value === '') {
                 callback(new Error('请输入用户名'));
                 }else if (!REG.NAME.test(value)) {
-                callback(new Error('无效密码'))
+                callback(new Error('无效用户名'))
                 } else {
                     callback();
                 }
@@ -75,7 +75,7 @@ export default {
                 pwd:''
             },
             rules: {
-                 loginName: [
+                loginName: [
                     {validator: validateName, trigger: 'blur' }
                 ],
                 pwd:[
@@ -97,17 +97,19 @@ export default {
                             me.$message.info("用户无权登录系统, 请联系管理员")
                         }
                         else{
-                            // 本地记住密码（cookie）
+                            // 本地记住密码（cookie）待开发
                             this.$message({
                                 message: '登录成功',
-                                type: 'success'
+                                type: 'success',
+                                duration: 2 * 1000
                             })
                             setUser(data.user.userName, data.token, data.user.id)
+                            storeUserInfor(data.user) 
+                            // loding
                             // 跳转路由
                             this.$router.push('/usermanagement')
                          }
-                    }
-                    else {
+                    } else {
                        this.$message.error(res.msg)
                     }
                 })  
@@ -115,7 +117,7 @@ export default {
                 return false
             }
          })
-        } 
+        }
     }
 }
 </script>

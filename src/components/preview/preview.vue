@@ -1,6 +1,6 @@
 <template>
-    <div class="message">
-        个人消息列表,还未开发
+    <div class="preview">
+        预览问卷：open blank
     </div>
 </template>
 
@@ -11,5 +11,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import 'common/scss/common.scss';
 
 </style>
