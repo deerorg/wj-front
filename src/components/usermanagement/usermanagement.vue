@@ -35,7 +35,7 @@
         </div>
         <el-dialog title="意见反馈" :visible.sync="feedbackDialog">
             <el-form :model="feedbackForm" :rules="rulesFeedback" ref="feedbackForm">
-                 <el-form-item prop="feedback">
+                <el-form-item prop="feedback">
                     <el-input type="textarea" v-model="feedbackForm.feedback"></el-input>
                 </el-form-item>
             </el-form>
