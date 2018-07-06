@@ -61,6 +61,7 @@ export function deleUser () {
   deleToken()
   deleId()
 }
+
 // 设置cookie,登录名 name, id, token,（分开）
 // 删除cookie,登录名 name, id, token
 

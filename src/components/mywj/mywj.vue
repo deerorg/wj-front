@@ -4,12 +4,12 @@
             <el-input placeholder="请输入问卷名进行搜索" v-model="query" class="input-with-select input_search">
                  <el-button slot="append" icon="el-icon-search"></el-button>
             </el-input> 
-            <el-button type="primary" class="add" icon="el-icon-plus" @click="add">创建问卷</el-button>
+            <el-button type="primary" class="add" icon="el-icon-plus" @click="dialogAddWj = true">创建问卷</el-button>
         </div>
-        <div class="nowj" v-show="!list.length">
+        <!-- <div class="nowj" v-show="!list.length">
             <i class="fa fa-file-o" style="padding-right:10px;"></i>当前无问卷
             <p class="tip">点击右上角按钮创建问卷</p>
-        </div>
+        </div> -->
         <div class="list">
             <div class="wj-item">
                 <div class="wjinfor fl">
@@ -21,28 +21,60 @@
                 </div>
                 <div class="operate fr">
                     <el-button class="operate_btn" type="text"><i style="padding-right:5px;" class="fa fa-play"></i>运行</el-button>
-                    <el-button class="operate_btn" type="text" icon="el-icon-edit">编辑</el-button>
+                    <el-button class="operate_btn" type="text" icon="el-icon-edit" @click="edit()">编辑</el-button>
                     <el-button class="operate_btn" type="text" icon="el-icon-view">预览</el-button>
-                    <el-button class="operate_btn" type="text" icon="el-icon-document">分析/管理</el-button>
-                    <el-button class="operate_btn" type="text"  icon="el-icon-delete">删除</el-button>
+                    <el-button class="operate_btn" type="text" icon="el-icon-document" @click="manage()">发送/分析</el-button>
+                    <el-button class="operate_btn" type="text"  icon="el-icon-delete" @click="delet()">删除</el-button>
                 </div>
             </div>
         </div>
+        <el-dialog title="创建问卷" :visible.sync="dialogAddWj" class="dialog">
+            <el-form :model="wjForm" :rules="rulesWj" ref="wjForm">
+                <el-form-item label="标题" prop="paperName">
+                    <el-input type="text" v-model="wjForm.paperName"></el-input>
+                </el-form-item>
+                <el-form-item label="问卷说明" prop="description">
+                    <el-input type="textarea" :rows="4" v-model="wjForm.description"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogAddWj = false">取 消</el-button>
+                <el-button type="primary"  @click="add">确 定</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
 <script>
-import { getWjList } from 'api/wj'
+import { getWjList, addWj } from 'api/wj'
 import { fliter } from 'common/js/validat'
-import { getId, } from 'store/store'
+import { getId } from 'store/store'
+import bus from 'store/bus'
 const PAGESIZE = 20
 export default {
     data() {
+        let validitTitle = (rule, value, callback) => {
+            if (fliter(value) === '') {
+                callback(new Error('问卷标题不能为空！'));
+            }else {
+                callback();
+            }
+        }
         return {
             query:'',
             currentpage: 1,
             pagesize: PAGESIZE,
-            list:[]
+            list:[],
+            dialogAddWj: false,
+            wjForm:{
+                paperName: '',
+                description: ''
+            },
+            rulesWj: {
+                paperName: [
+                    {validator: validitTitle, trigger: 'blur'}
+                ]
+            }
 
         }
     },
@@ -56,23 +88,53 @@ export default {
             })
         },
         add(){
-            let validitTitle = (value) => {
-                if (fliter(value) === '') {
-                    return '问卷标题不能为空！'
-                }else {
-                   return true
+            this.$refs.wjForm.validate((valid) => {
+                if (valid) {
+                   let wjinfor = {
+                       createUser: getId(),
+                       description: fliter(this.wjForm.description),
+                       paperName: fliter(this.wjForm.paperName),
+                       paperType: '1',
+                       remark: '',
+                       status: '0'
+                    }
+                    addWj(wjinfor).then((res) => {
+                        if(res.success === true) {
+                            this.$message({
+                                message: '问卷创建成功！',
+                                type: 'success',
+                                duration: 1 * 1000
+                            })
+                            bus.wj.id = res.data.id
+                            this.$router.push('/edit') 
+                        } else {
+                             this.$message.error(res.msg)
+                        }
+                    })
+                } else {
+                    return false
                 }
-            }
-            this.$prompt('请输入标题', '提示', {
+            })
+        },
+        edit(item) {
+            // 判断该问卷是否已发布，若正在运行提示无法编辑
+            // 若不在运行但是已收到答卷则无法编辑（一旦发布无法运行）
+            // 若只是草稿, 将当期的bus.wj的id设置为它然后在编辑页进入的时候再请求
+             this.$router.push('/edit')
+        },
+        manage(item){
+            // 判断是否开启运行，若未开启则提示
+            // 将 bus.wj的信息更新为该问卷的,但这里要考虑管理页刷新的话数据保存在哪 id和名字，或者管理页全部重新获取？
+            // 路由跳转至问卷管理页
+            this.$router.push('/wjmanagement')
+        },
+        delet(item) {
+             this.$confirm('是否删除该问卷?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
-                inputValidator: validitTitle,
-                inputErrorMessage: '标题不能为空'
-            }).then(({ value }) => {
-                value = fliter(value)
-                
-                // 保存标题到bus
-                // 页面跳转至编辑页
+                type: 'warning'
+            }).then(() => {
+               // 删除该问卷并手动删除列表中的该项
             }).catch(() => {
                 return
             })

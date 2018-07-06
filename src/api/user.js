@@ -17,10 +17,7 @@ export function updataPsd (oldPwd, newPwd, id) {
 
 export function updataInfor (infor) {
   const url = '/user/modify'
-  const data = {
-    user: infor
-  }
-  return service.post(url, data).then((res) => {
+  return service.post(url, infor).then((res) => {
     return Promise.resolve(res.data) // 这里貌似后端有错误500
   })
 }

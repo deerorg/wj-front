@@ -14,3 +14,10 @@ export function getWjList (pagenum, id, query, pagesize) {
     return Promise.resolve(res.data)
   })
 }
+
+export function addWj (wjinfor) {
+  const url = '/paper/add'
+  return service.post(url, wjinfor).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}

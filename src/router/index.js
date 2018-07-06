@@ -43,6 +43,21 @@ const EditWj = (resolve) => {
     resolve(module)
   })
 }
+const WjManagement = (resolve) => {
+  import('components/wjmanagement/wjmanagement').then((module) => {
+    resolve(module)
+  })
+}
+const SentWj = (resolve) => {
+  import('components/wjmanagement/sentwj').then((module) => {
+    resolve(module)
+  })
+}
+const AnalyzeWj = (resolve) => {
+  import('components/wjmanagement/analyzewj').then((module) => {
+    resolve(module)
+  })
+}
 
 export default new Router({
   routes: [
@@ -112,6 +127,33 @@ export default new Router({
         title: '编辑_问卷管家'
       },
       component: EditWj
+    },
+    {
+      path: '/wjmanagement',
+      name: 'wjmanagement',
+      redirect: '/wjmanagement/sentwj',
+      meta: {
+        title: '问卷管理_问卷管家'
+      },
+      children: [
+        {
+          path: 'sentwj',
+          name: 'sentwj',
+          meta: {
+            title: '问卷发送_问卷管家'
+          },
+          component: SentWj
+        },
+        {
+          path: 'analyzewj',
+          name: 'analyzewj',
+          meta: {
+            title: '答卷分析_问卷管家'
+          },
+          component: AnalyzeWj
+        }
+      ],
+      component: WjManagement
     }
   ]
 })

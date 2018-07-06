@@ -3,7 +3,13 @@ const bus = new Vue({
   data () {
     return {
       user: {},
-      wj: {}
+      wj: {
+        title: '',
+        description: '',
+        test_questions: [
+
+        ]
+      }
     }
   }
 })
