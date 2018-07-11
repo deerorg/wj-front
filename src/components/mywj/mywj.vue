@@ -2,32 +2,43 @@
     <div class="mywj">
         <div class="seach">
             <el-input placeholder="请输入问卷名进行搜索" v-model="query" class="input-with-select input_search">
-                 <el-button slot="append" icon="el-icon-search"></el-button>
+                 <el-button slot="append" icon="el-icon-search" @click="search"></el-button>
             </el-input> 
             <el-button type="primary" class="add" icon="el-icon-plus" @click="dialogAddWj = true">创建问卷</el-button>
         </div>
-        <!-- <div class="nowj" v-show="!list.length">
-            <i class="fa fa-file-o" style="padding-right:10px;"></i>当前无问卷
+        <div class="nowj" v-show="!list.length">
+            <i class="fa fa-file-o" style="padding-right:10px;"></i>当前无问卷/查找不到相应问卷
             <p class="tip">点击右上角按钮创建问卷</p>
-        </div> -->
-        <div class="list">
-            <div class="wj-item">
+        </div>
+        <div class="list" v-for="(item, index) in list" :key="index">
+            <div class="wj-item" >
                 <div class="wjinfor fl">
-                    <span class="infor_title textcut">质量调查</span>
-                    <span>ID: 12</span>
+                    <span class="infor_title textcut">{{item.paperName}}</span>
+                    <span>ID: {{item.id}}</span>
                     <span>答卷：0</span>
-                    <span>创建于：2018/7/6 13:00</span>
-                    <span>草稿</span>
+                    <span>创建于：{{item.createTime}}</span>
+                    <span v-if="item.status==0">草稿</span>
+                    <span v-if="item.status==1">运行中</span>
+                    <span v-if="item.status==2">停运中</span>
                 </div>
                 <div class="operate fr">
-                    <el-button class="operate_btn" type="text"><i style="padding-right:5px;" class="fa fa-play"></i>运行</el-button>
-                    <el-button class="operate_btn" type="text" icon="el-icon-edit" @click="edit()">编辑</el-button>
-                    <el-button class="operate_btn" type="text" icon="el-icon-view">预览</el-button>
-                    <el-button class="operate_btn" type="text" icon="el-icon-document" @click="manage()">发送/分析</el-button>
-                    <el-button class="operate_btn" type="text"  icon="el-icon-delete" @click="delet()">删除</el-button>
+                    <el-button v-show="item.status==0||item.status==2" class="operate_btn" type="text" @click="operate(item, index)"><i style="padding-right:5px;" class="fa fa-play"></i>运行</el-button>
+                    <el-button v-show="item.status==1" class="operate_btn" type="text"  @click="stop(item, index)"><i style="padding-right:5px;" class="fa fa-pause"></i>停止</el-button>
+                    <el-button class="operate_btn" type="text" icon="el-icon-edit" @click="edit(item)">编辑</el-button>
+                    <el-button class="operate_btn" type="text" icon="el-icon-view" @click="preview(item)">预览</el-button>
+                    <el-button class="operate_btn" type="text" icon="el-icon-document" @click="manage(item)">发送/分析</el-button>
+                    <el-button class="operate_btn" type="text"  icon="el-icon-delete" @click="delet(item,index)">删除</el-button>
                 </div>
             </div>
         </div>
+        <el-pagination
+            v-show="totalpages>1"
+            @current-change="handleCurrentChange"
+            :current-page.sync="currentpage"
+            layout="total, prev, pager, next"
+            :page-size=10
+            :total="total">
+        </el-pagination>
         <el-dialog title="创建问卷" :visible.sync="dialogAddWj" class="dialog">
             <el-form :model="wjForm" :rules="rulesWj" ref="wjForm">
                 <el-form-item label="标题" prop="paperName">
@@ -46,11 +57,11 @@
 </template>
 
 <script>
-import { getWjList, addWj } from 'api/wj'
+import { getWjList, addWj, deletWj, UpdateWj } from 'api/wj'
 import { fliter } from 'common/js/validat'
 import { getId } from 'store/store'
 import bus from 'store/bus'
-const PAGESIZE = 20
+const PAGESIZE = 10
 export default {
     data() {
         let validitTitle = (rule, value, callback) => {
@@ -63,6 +74,8 @@ export default {
         return {
             query:'',
             currentpage: 1,
+            total: 0,
+            totalpages: 1,
             pagesize: PAGESIZE,
             list:[],
             dialogAddWj: false,
@@ -81,10 +94,21 @@ export default {
     created(){
         this._getWjList()
     },
+    watch: {
+        query: function(newQuery) {
+            if(newQuery ==='') {
+                this._getWjList()
+            }
+        }
+    },
     methods:{
         _getWjList() {
             getWjList(this.currentpage, getId(), this.query, this.pagesize).then((res) => {
-                console.log(res.data)
+               if(res.success) {
+                   this.list = res.data.list
+                   this.totalpages = res.data.pages
+                   this.total = res.data.total
+               }
             })
         },
         add(){
@@ -106,7 +130,7 @@ export default {
                                 duration: 1 * 1000
                             })
                             bus.wj.id = res.data.id
-                            this.$router.push('/edit') 
+                            this.$router.push(`/edit:${res.data.id}`) 
                         } else {
                              this.$message.error(res.msg)
                         }
@@ -117,27 +141,113 @@ export default {
             })
         },
         edit(item) {
-            // 判断该问卷是否已发布，若正在运行提示无法编辑
-            // 若不在运行但是已收到答卷则无法编辑（一旦发布无法运行）
-            // 若只是草稿, 将当期的bus.wj的id设置为它然后在编辑页进入的时候再请求
-             this.$router.push('/edit')
+            if(item.status === '0') {
+                bus.wj.id = item.id
+                this.$router.push({path: `/edit:${item.id}`})
+            } else {
+                this.$message.error('问卷已发布，无法编辑问卷')
+            }
+            
         },
         manage(item){
-            // 判断是否开启运行，若未开启则提示
-            // 将 bus.wj的信息更新为该问卷的,但这里要考虑管理页刷新的话数据保存在哪 id和名字，或者管理页全部重新获取？
-            // 路由跳转至问卷管理页
-            this.$router.push('/wjmanagement')
+            bus.wj.id = item.id
+            this.$router.push(`/wjmanagement/sentwj:${item.id}`)
+           
         },
-        delet(item) {
-             this.$confirm('是否删除该问卷?', '提示', {
+        delet(item, index) {
+            this.$confirm('是否删除该问卷?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-               // 删除该问卷并手动删除列表中的该项
+                deletWj(item.id, getId()).then((res) =>{
+                   if(res.success) {
+                        this.$message({
+                            message: '问卷删除成功',
+                            type: 'success',
+                            duration: 1 * 1000
+                        })
+                        this.list.splice(index, 1)
+                    } else {
+                        this.$message.error(res.msg)
+                   }
+                })
             }).catch(() => {
                 return
             })
+        },
+        operate(item, index) {
+            let wjinfor = {
+                description: item.description,
+                id: item.id,
+                paperName: item.paperName,
+                paperType: '1',
+                remark: '',
+                status: '1',
+                updateUser: getId() 
+            }
+            if(item.status == '0') {
+                this.$confirm('确定开始运行该问卷？问卷开启运行后将不能修改', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+                }).then(() => {
+                    UpdateWj(wjinfor).then((res) => {
+                        if(res.success){
+                        this.list[index].status = '1'
+                            this.$message({
+                                    message: '问卷开启运行成功，可发布问卷',
+                                    type: 'success',
+                                    duration: 1 * 1000
+                            })
+                        } else {
+                            this.$message.error(res.msg)
+                        }
+                    })
+                }).catch(() => {
+                    return
+                })
+            } else if(item.status == '2') {
+                UpdateWj(wjinfor).then((res) => {
+                    if(res.success){
+                    this.list[index].status = '1'
+                        this.$message({
+                                message: '问卷开启运行成功，可发布问卷',
+                                type: 'success',
+                                duration: 1 * 1000
+                        })
+                    } else {
+                        this.$message.error(res.msg)
+                    }
+                })
+            }
+           
+               
+        },
+        stop(item, index) {
+            let wjinfor = {
+                description: item.description,
+                id: item.id,
+                paperName: item.paperName,
+                paperType: '1',
+                remark: '',
+                status: '2',
+                updateUser: getId() 
+            }
+            UpdateWj(wjinfor).then((res) => {
+                if(res.success){
+                    this.list[index].status = '2'
+                } else {
+                    this.$message.error(res.msg)
+                }
+            })
+        },
+        handleCurrentChange(num) {
+            this.currentpage = num
+            this._getWjList()
+        },
+        search() {
+           this._getWjList()
         }
     }
 }
@@ -154,7 +264,7 @@ export default {
     width: 60%;
 }
 .nowj{
-    @include center(300px, 100px); 
+    @include center(400px, 100px); 
     color: #b9b9b9;
     text-align: center;
     font-size: 26px;

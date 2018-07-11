@@ -1,30 +1,44 @@
 <template>
     <div class="sentwj">
-        <!-- 问卷管理：对于已发布（正在运行）的试卷进行管理
-        管理项(子路由)： 返回管理中心，发送问卷(对于开启运行,因此要提示是否开启运行问卷)（链接，二维码发送），分析（对于有回收到问卷的试卷才可跳转）:答卷列表，单个答卷情况（更多分析等待后台开发）
-                编辑问卷（只能编辑没有正在运行的，而对于已有回收答卷的要提醒：xxxxxx） -->
-        <div class="send-box">
-            <h3 class="title">链接发送</h3>
-            <div class="url">
-                 <el-input v-model="wjurl">
-                      <el-button slot="append" @click="copy">复制</el-button>
-                      <el-button slot="append" @click="open">打开</el-button>
-                 </el-input>
+        <el-alert title="该问卷还未发布，发布后才可发送" type="warning" v-show="wj.status==='0'||wj.status==='2'"></el-alert>
+        <div class="send-box" >
+            <div v-show="wj.status==='1'">
+                <h3 class="title">链接发送</h3>
+                <div class="url">
+                    <el-input v-model="wjurl">
+                        <el-button slot="append" @click="copy">复制</el-button>
+                        <el-button slot="append" @click="open">打开</el-button>
+                    </el-input>
+                </div>
             </div>
-             <h3 class="title">二维码 <span class="qrtip">扫一扫</span></h3>
-             <div class="qrcode">
-                <vue-qr :logoSrc="qrcodeconfig.imagePath" :text="qrcodeconfig.value" height="200" width="200"></vue-qr>
+            <div v-show="wj.status==='1'">
+                <h3 class="title">二维码 <span class="qrtip">扫一扫</span></h3>
+                <div class="qrcode">
+                    <vue-qr :logoSrc="qrcodeconfig.imagePath" :text="qrcodeconfig.value" height="200" width="200"></vue-qr>
+                </div>
+            </div>
+            <div v-show="wj.status==='0'||wj.status==='2' ">
+                <h3 class="title">问卷发布</h3>
+                <el-button class="publish_btn" type="primary" @click="publish">发布</el-button>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import VueQr from 'vue-qr'
 const IMAGEPATH = '../../common/img/logo.png'
+import VueQr from 'vue-qr'
+import { getWjInfor, UpdateWj} from 'api/wj'
+import { getId, getToken, getIdfromUrl } from 'store/store'
+import { checkLoginState } from 'api/login'
+import bus from 'store/bus'
 export default {
+    created() {
+        this._getWjInfor()
+    },
     data() {
         return {
+            wj: {},
             wjurl: 'http://localhost:8000/#/wjmanagement/sentwj',
             qrcodeconfig: {
                 value: 'http://localhost:8000/#/wjmanagement/sentwj',
@@ -51,6 +65,61 @@ export default {
         },
         open() {
             
+        },
+        _getWjInfor() {
+            getWjInfor(getIdfromUrl(), getId()).then((res) => {
+                if(res.success) {
+                    this.wj = res.data
+                } else{
+                    this.$message.error(res.msg)
+                }
+            })
+        },
+        publish(){
+            let wjinfor = {
+                description: this.wj.description,
+                id: this.wj.id,
+                paperName: this.wj.paperName,
+                paperType: '1',
+                remark: '',
+                status: '1',
+                updateUser: getId() 
+            }
+            if(this.wj.status == '0') {
+                this.$confirm('确定开始运行该问卷？问卷开启运行后将不能修改', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+                }).then(() => {
+                    UpdateWj(wjinfor).then((res) => {
+                        if(res.success){
+                        this.wj.status = '1'
+                        this.$message({
+                                message: '问卷开启运行成功',
+                                type: 'success',
+                                duration: 1 * 1000
+                        })
+                        } else {
+                            this.$message.error(res.msg)
+                        }
+                    })
+                }).catch(() => {
+                    return
+                })
+            } else if(this.wj.status == '2') {
+                UpdateWj(wjinfor).then((res) => {
+                    if(res.success){
+                    this.wj.status = '1'
+                        this.$message({
+                                message: '问卷开启运行成功',
+                                type: 'success',
+                                duration: 1 * 1000
+                        })
+                    } else {
+                        this.$message.error(res.msg)
+                    }
+                })
+            }
         }
     }
 
@@ -82,5 +151,8 @@ export default {
 .qrtip{
     font-weight: lighter;
     font-size: 14px;
+}
+.publish_btn{
+    margin-top: 20px;
 }
 </style>

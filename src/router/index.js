@@ -59,6 +59,12 @@ const AnalyzeWj = (resolve) => {
   })
 }
 
+const Preview = (resolve) => {
+  import('components/preview/preview').then((module) => {
+    resolve(module)
+  })
+}
+
 export default new Router({
   routes: [
     {
@@ -121,7 +127,7 @@ export default new Router({
       component: UserManagement
     },
     {
-      path: '/edit',
+      path: '/edit:id',
       name: 'edit',
       meta: {
         title: '编辑_问卷管家'
@@ -131,13 +137,13 @@ export default new Router({
     {
       path: '/wjmanagement',
       name: 'wjmanagement',
-      redirect: '/wjmanagement/sentwj',
+      redirect: '/wjmanagement/sentwj:id',
       meta: {
         title: '问卷管理_问卷管家'
       },
       children: [
         {
-          path: 'sentwj',
+          path: 'sentwj:id',
           name: 'sentwj',
           meta: {
             title: '问卷发送_问卷管家'
@@ -145,7 +151,7 @@ export default new Router({
           component: SentWj
         },
         {
-          path: 'analyzewj',
+          path: 'analyzewj:id',
           name: 'analyzewj',
           meta: {
             title: '答卷分析_问卷管家'
@@ -154,6 +160,14 @@ export default new Router({
         }
       ],
       component: WjManagement
+    },
+    {
+      path: '/wjpreview:id',
+      name: 'wjpreview',
+      meta: {
+        title: '问卷预览_问卷管家'
+      },
+      component: Preview
     }
   ]
 })

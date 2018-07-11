@@ -6,7 +6,6 @@ export const REG = {
 }
 
 export function fliter (value) {
-  value = value.replace(/[<>]/g, function (c) { return {'<': '&lt', '>': '&gt'}[c] })
   value = value.replace(/[\s\r\n]/g, '')
   return value
 }
