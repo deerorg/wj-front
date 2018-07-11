@@ -33,7 +33,7 @@
                 <router-view></router-view>
             </div>
         </div>
-        <el-dialog title="意见反馈" :visible.sync="feedbackDialog">
+        <el-dialog title="意见反馈" :visible.sync="feedbackDialog" :modal=false>
             <el-form :model="feedbackForm" :rules="rulesFeedback" ref="feedbackForm">
                 <el-form-item prop="feedback">
                     <el-input type="textarea" v-model="feedbackForm.feedback"></el-input>
