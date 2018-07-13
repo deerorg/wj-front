@@ -65,7 +65,11 @@ export function deleUser () {
 export function getIdfromUrl () {
   let url = window.location.href
   if (url.indexOf(':') > 0) {
+<<<<<<< HEAD
     return decodeURI((url.split(':'))[url.split(':').length - 1])
+=======
+    return decodeURI((url.split(':'))[3])
+>>>>>>> ddcd95ee518365bf882acfd295b88ccc225c0fd4
   } else { return '' }
 }
 // 设置cookie,登录名 name, id, token,（分开）

@@ -3,8 +3,12 @@
         <el-header height="60px" style="width: 100%;background-color: rgb(84, 92, 100);" >
             <div class="operat_area">
                 <el-button icon="el-icon-plus" @click="preAddque">单选题</el-button>
+<<<<<<< HEAD
                 <el-button type="success" round class="fr" icon="el-icon-check" @click="finishEdit"> 完成编辑</el-button>
                 <el-button type="info" icon="el-icon-view" class="fr" @click="preView">预览</el-button>
+=======
+                <el-button type="success" round class="fr" icon="el-icon-check"> 完成编辑</el-button>
+>>>>>>> ddcd95ee518365bf882acfd295b88ccc225c0fd4
             </div>
         </el-header>
         <div class="edit-area">
@@ -15,14 +19,22 @@
                     <el-button type="text" class="fr" @click="dialogWjHead=true" size="small">修改标题/说明</el-button>
                 </div>
                 <div class="wj_main">
+<<<<<<< HEAD
                     <div class="question-list">
                         <div class="question-item" v-for="(que,index) in wj.testList" :key="index">
                             <div class="q_head" @mouseover="showoperat(index)" @mouseout="noshowoperat(index)">
                                 <span class="requir" v-show="que.required=='1'">*</span>
+=======
+                    <div class="question-list" v-for="(que,index) in wj.testList" :key="index">
+                        <div class="question-item">
+                            <div class="q_head" @mouseover="showoperat(index)" @mouseout="noshowoperat(index)">
+                                <span class="requir" v-show="que.required">*</span>
+>>>>>>> ddcd95ee518365bf882acfd295b88ccc225c0fd4
                                 <span class="q_description">{{index+1}}.{{que.testName}}</span>
                                 <span class="q_operat_btn fr" ref="operatbtn">
                                     <el-button type="text" size="mini" @click="premodifyQue(que,index)">修改</el-button>
                                     <el-button type="text" size="mini" @click="_deletQue(que,index)">删除</el-button>
+<<<<<<< HEAD
                                     <el-button type="text" size="mini" @click="preAddOption(que,index)">添加选项</el-button>
                                 </span>
                             </div>
@@ -42,6 +54,16 @@
                                             <el-button type="text" size="mini" @click="_deletOp(op,index)" style="padding:0;  margin-left: 0;">删除</el-button>
                                         </span>
                                     </el-radio>
+=======
+                                    <el-button type="text" size="mini" @click="preAddOption">添加选项</el-button>
+                                </span>
+                            </div>
+                            <div class="option">
+                                <el-radio-group >
+                                    <el-radio :label="1">备选项</el-radio>
+                                    <el-radio :label="2">备选项</el-radio>
+                                    <el-radio :label="3">备选项</el-radio>
+>>>>>>> ddcd95ee518365bf882acfd295b88ccc225c0fd4
                                 </el-radio-group>
                             </div>
                         </div>
@@ -49,7 +71,11 @@
                 </div>
              </div>
         </div>
+<<<<<<< HEAD
         <el-dialog title="创建问卷" :visible.sync="dialogWjHead">
+=======
+         <el-dialog title="创建问卷" :visible.sync="dialogWjHead">
+>>>>>>> ddcd95ee518365bf882acfd295b88ccc225c0fd4
             <el-form :model="wjHead" :rules="rulesWj" ref="wjHeadForm">
                 <el-form-item label="标题" prop="paperName">
                     <el-input type="text" v-model="wjHead.paperName"></el-input>
@@ -118,8 +144,14 @@
 </template>
 
 <script>
+<<<<<<< HEAD
 import { getWjInfor, UpdateWj, addQuestion, updataQuestion, deleteQue, addOption, updataOption, deletOp } from 'api/wj'
 import { fliter, fliterTag } from 'common/js/validat'
+=======
+import { getWjInfor, UpdateWj, addQuestion, updataQuestion, deleteQue } from 'api/wj'
+import { fliter } from 'common/js/validat'
+import { getBase64 } from 'common/js/imgbase'
+>>>>>>> ddcd95ee518365bf882acfd295b88ccc225c0fd4
 import { getId, getToken, getIdfromUrl } from 'store/store'
 import { checkLoginState } from 'api/login'
 import bus from 'store/bus'
@@ -191,9 +223,12 @@ export default {
             },
             dialogWjOption: false,
             wjOption: {
+<<<<<<< HEAD
                 id: '0',
                 queid: 1,
                 optionindex: 0,
+=======
+>>>>>>> ddcd95ee518365bf882acfd295b88ccc225c0fd4
                 curOperaOp: '添加选项',
                 optionType: '1',
                 content: '',
@@ -217,6 +252,7 @@ export default {
         showoperat(index) { 
            document.getElementsByClassName("q_operat_btn")[index].style.display="inline"
         },
+<<<<<<< HEAD
         noshowoperat(index) {
             document.getElementsByClassName("q_operat_btn")[index].style.display="none"
         },
@@ -226,6 +262,11 @@ export default {
         noshowoperatOp(index){
             document.getElementsByClassName("option_op")[index].style.display="none"
         },
+=======
+        noshowoperat(index){
+            document.getElementsByClassName("q_operat_btn")[index].style.display="none"
+        },
+>>>>>>> ddcd95ee518365bf882acfd295b88ccc225c0fd4
         _getWjInfor() {
             getWjInfor(getIdfromUrl(), getId()).then((res) => {
                 if(res.success) {
@@ -233,8 +274,11 @@ export default {
                     this.wjHead.paperName = this.wj.paperName
                     this.wjHead.description = this.wj.description
                     this.dialogWjHead = false
+<<<<<<< HEAD
                 } else{
                     this.$message.error(res.msg)
+=======
+>>>>>>> ddcd95ee518365bf882acfd295b88ccc225c0fd4
                 }
             })
         },
@@ -362,6 +406,7 @@ export default {
                 return
             })
         },
+<<<<<<< HEAD
         preAddOption(item, index) {
             this.wjOption.queid = item.id
             this.wjOption.queindex = index
@@ -487,6 +532,34 @@ export default {
             this.$router.push(`/wjmanagement/sentwj:${getIdfromUrl()}`)
         }
         
+=======
+        preAddOption() {
+            this.wjOption.curOperaOp = '添加选项'
+            this.wjOption.optionType = '1'
+            this.content = ''
+            this.img = ''
+            this.dialogWjOption = true
+        },
+        optionComfig() {
+            this.wjOption.curOperaOp === '添加选项' ? this.AddOption() : this.modifyOption()
+        },
+        handleImg(file) {
+            getBase64(file.url).then((imgdata) => {
+               // console.log(imgdata)
+                this.wjOption.img = imgdata
+            })
+        },
+        AddOption (){
+            this.$refs.wjOptionForm.validate((valid) => {
+                if (valid) {
+                   // 验证正确
+                } else return false
+            })
+        },
+        modifyOption (){
+
+        }
+>>>>>>> ddcd95ee518365bf882acfd295b88ccc225c0fd4
     }
 }
 </script>
@@ -558,11 +631,16 @@ export default {
     font-size: 14px;
 }
 .option{
+<<<<<<< HEAD
     padding: 10px 0; 
+=======
+    margin: 20px 0; 
+>>>>>>> ddcd95ee518365bf882acfd295b88ccc225c0fd4
 }
 .q_operat_btn{
     display: none;
 }
+<<<<<<< HEAD
 .crosswise{
     display: inline-block;
     padding: 6 20px;
@@ -584,5 +662,7 @@ export default {
 .el-radio + .el-radio {
     margin-left: 0px !important;
 }
+=======
+>>>>>>> ddcd95ee518365bf882acfd295b88ccc225c0fd4
 </style>
 

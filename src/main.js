@@ -5,7 +5,11 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import bus from './store/bus'
+<<<<<<< HEAD
 import { Form, FormItem, Input, Checkbox, Button, Message, MessageBox, Submenu, Menu, MenuItem, MenuItemGroup, Dialog, Container, Aside, Main, Pagination, Header, Radio, RadioGroup, Upload, Alert } from 'element-ui'
+=======
+import { Form, FormItem, Input, Checkbox, Button, Message, MessageBox, Submenu, Menu, MenuItem, MenuItemGroup, Dialog, Container, Aside, Main, Pagination, Header, Radio, RadioGroup, Upload } from 'element-ui'
+>>>>>>> ddcd95ee518365bf882acfd295b88ccc225c0fd4
 import 'normalize.css'
 import 'common/scss/base.scss'
 import 'common/scss/element-ui.scss'
@@ -31,7 +35,10 @@ Vue.use(Header)
 Vue.use(Radio)
 Vue.use(RadioGroup)
 Vue.use(Upload)
+<<<<<<< HEAD
 Vue.use(Alert)
+=======
+>>>>>>> ddcd95ee518365bf882acfd295b88ccc225c0fd4
 
 // VueClipboard.config.autoSetContainer = true // add this line
 Vue.config.productionTip = false

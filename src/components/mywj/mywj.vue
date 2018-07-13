@@ -150,8 +150,20 @@ export default {
             
         },
         manage(item){
+<<<<<<< HEAD
             bus.wj.id = item.id
             this.$router.push(`/wjmanagement/sentwj:${item.id}`)
+=======
+            if(item.status=='1') {
+                bus.wj.id = item.id
+                this.$router.push(`/wjmanagement/sentwj:${item.id}`)
+            } else if(item.status=='2'){
+                bus.wj.id = item.id
+                this.$router.push(`/wjmanagement/analyzewj:${item.id}`)
+            } else {
+                this.$message.error('您还未开启问卷，无法进行问卷发送或分析')
+            }
+>>>>>>> ddcd95ee518365bf882acfd295b88ccc225c0fd4
            
         },
         delet(item, index) {
