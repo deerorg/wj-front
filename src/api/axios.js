@@ -5,7 +5,7 @@ import { Message } from 'element-ui'
 
 const service = axios.create({
   baseURL: URLConfig.BASE_API,
-  timeout: 5000
+  timeout: 20000
 })
 
 service.interceptors.request.use(config => {

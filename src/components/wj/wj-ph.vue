@@ -1,6 +1,7 @@
 <template>
     <div class="wj-pc">
         获取url附带的id值。移动端
+        答卷
     </div>
 </template>
 

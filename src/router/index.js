@@ -64,6 +64,16 @@ const Preview = (resolve) => {
     resolve(module)
   })
 }
+const WjPC = (resolve) => {
+  import('components/wj/wj-pc').then((module) => {
+    resolve(module)
+  })
+}
+const WjPh = (resolve) => {
+  import('components/wj/wj-ph').then((module) => {
+    resolve(module)
+  })
+}
 
 export default new Router({
   routes: [
@@ -168,6 +178,22 @@ export default new Router({
         title: '问卷预览_问卷管家'
       },
       component: Preview
+    },
+    {
+      path: '/wjforanswer/pc:id',
+      name: 'wjforanswer',
+      meta: {
+        title: '问卷填写_问卷管家'
+      },
+      component: WjPC
+    },
+    {
+      path: '/wjforanswer/ph:id',
+      name: 'wjforanswer',
+      meta: {
+        title: '问卷填写_问卷管家'
+      },
+      component: WjPh
     }
   ]
 })

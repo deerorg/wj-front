@@ -4,11 +4,8 @@ const bus = new Vue({
     return {
       user: {},
       wj: {
-        title: '',
-        description: '',
-        test_questions: [
-
-        ]
+        id: '',
+        status: ''
       }
     }
   }

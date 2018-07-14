@@ -7,7 +7,7 @@
                 <el-button type="info" icon="el-icon-view" class="fr" @click="preView">预览</el-button>
             </div>
         </el-header>
-        <div class="edit-area">
+        <div class="edit-area" v-loading="loading" element-loading-text="拼命加载中...">
             <div class="area-contain">
                 <div class="wj_head">
                     <p class="title">{{wj.paperName}}</p>
@@ -28,18 +28,20 @@
                             </div>
                             <div class="option">
                                 <el-radio-group>
-                                    <el-radio :label="index"  class="option" :class="[que.viewControl=='0' ? 'crosswise' : 'vertical']"  v-if="op.optionType=='1'" v-for="(op,index) in que.optionList" :key="index">
-                                        {{op.content}}
-                                        <span class="option_op">
-                                            <el-button type="text" size="mini" @click="premodifyOp(op,index)" class="op_btn" style="padding:0; margin-left: 0;">修改</el-button>
-                                            <el-button type="text" size="mini" @click="_deletOp(op,index)" style="padding:0;  margin-left: 0;">删除</el-button>
+                                    <el-radio :label="index"  class="option" :class="[que.viewControl=='0' ? 'crosswise' : 'vertical']"  v-for="(op,index) in que.optionList" :key="index">
+                                        <span v-if="op.optionType=='1'">
+                                            {{op.content}}
+                                            <span class="option_op">
+                                                <el-button type="text" size="mini" @click="premodifyOp(op,index)" class="op_btn" style="padding:0; margin-left: 0;">修改</el-button>
+                                                <el-button type="text" size="mini" @click="_deletOp(op,index)" style="padding:0;  margin-left: 0;">删除</el-button>
+                                            </span>
                                         </span>
-                                    </el-radio>
-                                    <el-radio :label="index" class="option" :class="[que.viewControl=='0' ? 'crosswise' : 'vertical']" v-if="op.optionType=='2'" v-for="(op,index) in que.optionList" :key="index">
-                                        <img :src="op.img" class="opimg">
-                                        <span class="option_op">
-                                            <el-button type="text" size="mini" @click="premodifyOp(op,index)" class="op_btn" style="padding:0; margin-left: 0;">修改</el-button>
-                                            <el-button type="text" size="mini" @click="_deletOp(op,index)" style="padding:0;  margin-left: 0;">删除</el-button>
+                                        <span v-if="op.optionType=='2'">
+                                            <img :src="op.img" class="opimg" @click="magnifyImg(op.img)">
+                                            <span class="option_op">
+                                                <el-button type="text" size="mini" @click="premodifyOp(op,index)" class="op_btn" style="padding:0; margin-left: 0;">修改</el-button>
+                                                <el-button type="text" size="mini" @click="_deletOp(op,index)" style="padding:0;  margin-left: 0;">删除</el-button>
+                                            </span>
                                         </span>
                                     </el-radio>
                                 </el-radio-group>
@@ -105,7 +107,7 @@
                         :limit="1"
                         :on-change="handleImg">
                         <el-button slot="trigger" size="small" type="primary" :disabled="wjOption.optionType=='1'">选择图片</el-button>
-                        <div slot="tip" class="el-upload__tip">只能上传jpg/png文件</div>
+                        <div slot="tip" class="el-upload__tip">只能上传jpg/jpeg/png/gif格式的图片，且图片大小不能超过 2MB!</div>
                     </el-upload>
                 </el-form-item>
             </el-form>
@@ -115,9 +117,12 @@
             </div>
         </el-dialog>
     </div>
+    
 </template>
 
 <script>
+
+
 import { getWjInfor, UpdateWj, addQuestion, updataQuestion, deleteQue, addOption, updataOption, deletOp } from 'api/wj'
 import { fliter, fliterTag } from 'common/js/validat'
 import { getId, getToken, getIdfromUrl } from 'store/store'
@@ -166,6 +171,7 @@ export default {
             } else callback()
         }
         return{
+            loading: true,
             wj: {},
             wjHead:{
                 paperName: '',
@@ -187,7 +193,8 @@ export default {
                 queindex: 1,
                 testName: '',
                 required: true,
-                optioncontrol:'0'
+                optioncontrol:'0',
+                optionList: []
             },
             dialogWjOption: false,
             wjOption: {
@@ -213,6 +220,9 @@ export default {
     created() {
         this._getWjInfor()
     },
+    mounted(){
+        this.clientHeight()
+    }, 
     methods: {
         showoperat(index) { 
            document.getElementsByClassName("q_operat_btn")[index].style.display="inline"
@@ -220,11 +230,39 @@ export default {
         noshowoperat(index) {
             document.getElementsByClassName("q_operat_btn")[index].style.display="none"
         },
-        showoperatOp(index) {
-            document.getElementsByClassName("option_op")[index].style.display="inline"
+        clientHeight(){
+           let screenH = document.documentElement.clientHeight || document.body.clientHeight
+           let headH = document.getElementsByClassName("el-header")[0].offsetHeight
+           let h = screenH - headH - 2
+           document.getElementsByClassName("edit-area")[0].style.minHeight = h + 'px' 
         },
-        noshowoperatOp(index){
-            document.getElementsByClassName("option_op")[index].style.display="none"
+        handleImg(file, fileList) {
+            let that = this
+            const isLt2M = file.size / 1024 / 1024 < 2;
+            if (!isLt2M) {
+                that.imgList = []
+                that.$message.error('上传头像图片大小不能超过 2MB!');
+            } else {
+                    fetch(file.url).then(data => {
+                    let blob = data.blob()
+                    return blob
+                }).then(blob => {
+                    let reader = new window.FileReader()
+                    reader.onloadend = function () {
+                        that.wjOption.img = reader.result
+                    }
+                    reader.readAsDataURL(blob)
+                }) 
+            }
+        },
+        magnifyImg(data){
+            this.$alert(`<img src="${data}" style="width:auto;height:auto;max-width:910px;max-height:620px;">`, '', {
+                dangerouslyUseHTMLString: true,
+                showCancelButton: false,
+                showConfirmButton: false,
+                closeOnClickModal:true
+                
+            })
         },
         _getWjInfor() {
             getWjInfor(getIdfromUrl(), getId()).then((res) => {
@@ -232,7 +270,7 @@ export default {
                     this.wj = res.data
                     this.wjHead.paperName = this.wj.paperName
                     this.wjHead.description = this.wj.description
-                    this.dialogWjHead = false
+                    this.loading = false
                 } else{
                     this.$message.error(res.msg)
                 }
@@ -313,6 +351,7 @@ export default {
             this.wjSingleQue.required = req
             this.wjSingleQue.optioncontrol = item.viewControl
             this.wjSingleQue.curOperaQue = '修改试题'
+            this.wjSingleQue.optionList = item.optionList
             this.dialogWjSingleQue = true
         },
         modifyQue() {
@@ -335,6 +374,7 @@ export default {
                     updataQuestion(queinfor).then((res) => {
                         if(res.success){
                            this.dialogWjSingleQue = false
+                           queinfor.optionList = this.wjSingleQue.optionList
                            this.wj.testList[this.wjSingleQue.queindex] = queinfor
                         } else {
                             this.$message.error(res.msg)
@@ -369,23 +409,11 @@ export default {
             this.wjOption.optionType = '1'
             this.wjOption.content = ''
             this.wjOption.img = ''
+            this.imgList = []
             this.dialogWjOption = true
         },
         optionComfig() {
             this.wjOption.curOperaOp === '添加选项' ? this._addOption() : this.modifyOption()
-        },
-        handleImg(file, fileList) {
-            let that = this
-            fetch(file.url).then(data => {
-                let blob = data.blob()
-                return blob
-            }).then(blob => {
-                let reader = new window.FileReader()
-                reader.onloadend = function () {
-                    that.wjOption.img = reader.result
-                }
-                reader.readAsDataURL(blob)
-            }) 
         },
         _addOption (){
             this.$refs.wjOptionForm.validate((valid) => {
@@ -404,6 +432,7 @@ export default {
                     addOption(optionifor).then((res) => {
                         if(res.success){
                             this.dialogWjOption = false
+                            res.data.img = this.wjOption.img
                             if(this.wj.testList[this.wjOption.queindex].optionList){
                                 this.wj.testList[this.wjOption.queindex].optionList.push(res.data)
                             } else {
@@ -483,19 +512,20 @@ export default {
             let routeData = this.$router.resolve({ path: `/wjpreview:${getIdfromUrl()}`})
             window.open(routeData.href, '_blank')
         },
-        finishEdit(){
+        finishEdit() {
             this.$router.push(`/wjmanagement/sentwj:${getIdfromUrl()}`)
         }
-        
     }
 }
 </script>
 
 <style lang="scss" scoped>
 @import 'common/scss/common.scss';
+body{
+    background-color: #efefef !important;
+}
 .edit-wj{
     width: 100%;
-    height: 100%;
     background-color: #efefef; 
 }
 .heder{
@@ -565,15 +595,15 @@ export default {
 }
 .crosswise{
     display: inline-block;
-    padding: 6 20px;
+    padding: 6px 20px;
 }
 .vertical{
     display: block;
     padding: 6px 20px;
 }
 .opimg{
-    width: 100px;
-    height: 100px;
+    width: 160px;
+    height: 120px;
 }
 .option_op{
     padding-left: 10px;
@@ -584,5 +614,6 @@ export default {
 .el-radio + .el-radio {
     margin-left: 0px !important;
 }
+
 </style>
 

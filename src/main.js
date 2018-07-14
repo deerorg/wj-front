@@ -5,11 +5,7 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import bus from './store/bus'
-<<<<<<< HEAD
-import { Form, FormItem, Input, Checkbox, Button, Message, MessageBox, Submenu, Menu, MenuItem, MenuItemGroup, Dialog, Container, Aside, Main, Pagination, Header, Radio, RadioGroup, Upload, Alert } from 'element-ui'
-=======
-import { Form, FormItem, Input, Checkbox, Button, Message, MessageBox, Submenu, Menu, MenuItem, MenuItemGroup, Dialog, Container, Aside, Main, Pagination, Header, Radio, RadioGroup, Upload } from 'element-ui'
->>>>>>> ddcd95ee518365bf882acfd295b88ccc225c0fd4
+import { Form, FormItem, Input, Checkbox, Button, Message, MessageBox, Submenu, Menu, MenuItem, MenuItemGroup, Dialog, Container, Aside, Main, Pagination, Header, Radio, RadioGroup, Upload, Alert, Loading } from 'element-ui'
 import 'normalize.css'
 import 'common/scss/base.scss'
 import 'common/scss/element-ui.scss'
@@ -35,18 +31,16 @@ Vue.use(Header)
 Vue.use(Radio)
 Vue.use(RadioGroup)
 Vue.use(Upload)
-<<<<<<< HEAD
 Vue.use(Alert)
-=======
->>>>>>> ddcd95ee518365bf882acfd295b88ccc225c0fd4
-
+Vue.use(Loading.directive)
 // VueClipboard.config.autoSetContainer = true // add this line
 Vue.config.productionTip = false
 Vue.prototype.$message = Message
 Vue.prototype.$msgbox = MessageBox
+Vue.prototype.$alert = MessageBox.alert
 Vue.prototype.$confirm = MessageBox.confirm
 Vue.prototype.$prompt = MessageBox.prompt
-// Vue.prototype.$loading = Loading.service
+Vue.prototype.$loading = Loading.service
 Vue.use(require('vue-wechat-title'))
 Vue.prototype.$bus = bus
 window.router = router

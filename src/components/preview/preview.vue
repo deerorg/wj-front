@@ -1,9 +1,9 @@
 <template>
     <div class="edit-wj">
-        <div class="heder">
+        <div class="header">
             <el-alert class="tip" title="您正在预览该问卷，预览时不能答题" type="warning"></el-alert>
         </div>
-        <div class="edit-area">
+        <div class="edit-area"  v-loading="loading" element-loading-text="拼命加载中...">
             <div class="area-contain">
                 <div class="wj_head">
                     <p class="title">{{wj.paperName}}</p>
@@ -12,17 +12,19 @@
                 <div class="wj_main">
                     <div class="question-list" v-for="(que,index) in wj.testList" :key="index">
                         <div class="question-item">
-                            <div class="q_head" @mouseover="showoperat(index)" @mouseout="noshowoperat(index)">
+                            <div class="q_head">
                                 <span class="requir" v-show="que.required=='1'">*</span>
                                 <span class="q_description">{{index+1}}.{{que.testName}}</span>
                             </div>
                             <div class="option">
                                 <el-radio-group>
-                                    <el-radio :label="index"  class="option" :class="[que.viewControl=='0' ? 'crosswise' : 'vertical']"  v-if="op.optionType=='1'" v-for="(op,index) in que.optionList" :key="index">
-                                        {{op.content}}
-                                    </el-radio>
-                                    <el-radio :label="index" class="option" :class="[que.viewControl=='0' ? 'crosswise' : 'vertical']" v-if="op.optionType=='2'" v-for="(op,index) in que.optionList" :key="index">
-                                        <img :src="op.img" class="opimg">
+                                    <el-radio :label="index"  class="option" :class="[que.viewControl=='0' ? 'crosswise' : 'vertical']"  v-for="(op,index) in que.optionList" :key="index">
+                                        <span  v-if="op.optionType=='1'">
+                                            {{op.content}}
+                                        </span>
+                                        <span v-if="op.optionType=='2'">
+                                            <img :src="op.img" class="opimg"  @click="magnifyImg(op.img)">
+                                        </span>
                                     </el-radio>
                                 </el-radio-group>
                             </div>
@@ -58,24 +60,42 @@ export default {
     },
     data() {
         return{
-            wj: {}
+            wj: {},
+            loading: true
         }
     },
     created() {
         this._getWjInfor()
     },
+    mounted(){
+        this.clientHeight()
+    }, 
     methods: {
         _getWjInfor() {
             getWjInfor(getIdfromUrl(), getId()).then((res) => {
                 if(res.success) {
                     this.wj = res.data
-                    this.wjHead.paperName = this.wj.paperName
-                    this.wjHead.description = this.wj.description
-                    this.dialogWjHead = false
+                    this.loading = false
                 }
             })
-        }  
+        },
+        clientHeight(){
+            let screenH = document.documentElement.clientHeight || document.body.clientHeight
+            let headH = document.getElementsByClassName("header")[0].offsetHeight
+            let h = screenH - headH - 2;
+            console.log(h)
+            document.getElementsByClassName("edit-area")[0].style.minHeight = h + 'px' 
+        },
+        magnifyImg(data){
+                this.$alert(`<img src="${data}" style="width:auto;height:auto;max-width:910px;max-height:620px;">`, '', {
+                dangerouslyUseHTMLString: true,
+                showCancelButton: false,
+                showConfirmButton: false,
+                closeOnClickModal:true
+            })
+        },
     }
+    
 }
 </script>
 
@@ -83,10 +103,9 @@ export default {
 @import 'common/scss/common.scss';
 .edit-wj{
     width: 100%;
-    height: 100%;
     background-color: #efefef; 
 }
-.heder{
+.header{
     height: $topmargin;
     width: 100%;
 }
@@ -160,8 +179,8 @@ export default {
     padding: 6px 20px;
 }
 .opimg{
-    width: 100px;
-    height: 100px;
+    width: 160px;
+    height: 120px;
 }
 .option_op{
     padding-left: 10px;

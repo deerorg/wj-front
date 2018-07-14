@@ -35,13 +35,15 @@ import bus from 'store/bus'
 export default {
     created() {
         this._getWjInfor()
+        this.wjurl = window.location.href.split('#')[0] + 'wjforanswer/pc:' + getIdfromUrl() 
+        this.qrcodeconfig.value = this.wjurl
     },
     data() {
         return {
             wj: {},
-            wjurl: 'http://localhost:8000/#/wjmanagement/sentwj',
+            wjurl: '',
             qrcodeconfig: {
-                value: 'http://localhost:8000/#/wjmanagement/sentwj',
+                value: '',
                 imagePath: require('../../common/img/logo.png'),
                 filter: 'color'
             }
@@ -64,7 +66,8 @@ export default {
             })
         },
         open() {
-            
+            let routeData = this.$router.resolve({ path: `/wjforanswer/pc:${getIdfromUrl()}`})
+            window.open(routeData.href, '_blank')
         },
         _getWjInfor() {
             getWjInfor(getIdfromUrl(), getId()).then((res) => {

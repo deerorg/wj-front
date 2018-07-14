@@ -7,24 +7,24 @@
         </div>
         <div class="form">
             <el-form :label-position="labelPosition" label-width="60px" status-icon :model="registerForm" :rules="rules" ref="registerForm">
-                <el-form-item label="用户名" prop="loginName">
-                    <el-input v-model="registerForm.loginName"></el-input>
+                <el-form-item label="用户名" prop="userName">
+                    <el-input v-model="registerForm.userName" placeholder="请输入用户名"></el-input>
                 </el-form-item>
                 <el-form-item label="手机号" prop="mobile">
-                    <el-input v-model="registerForm.mobile"></el-input>
+                    <el-input v-model="registerForm.mobile" placeholder="请输入11位有效手机号码"></el-input>
                 </el-form-item>
                 <el-form-item label="验证码" prop="validateCode">
-                    <el-input v-model="registerForm.validateCode" class="shortinput"></el-input>
-                    <!-- <el-button v-show="!validateImg"  @click="getImg">获取验证码</el-button> -->
-                    <span class="validatimg" @click="getImg">
-                        <img id="vImg" src="">
+                    <el-input v-model="registerForm.validateCode" class="shortinput" placeholder="请输入正确的手机号后获取验证码"></el-input>
+                    <el-button v-show="!validateImg"  @click="getImg">获取验证码</el-button>
+                    <span class="validatimg" @click="getImg" v-show="validateImg">
+                        <img id="vImg" :src="validateImg">
                     </span>
                 </el-form-item>
-                <el-form-item label="密码" prop="pwd">
-                    <el-input type="password" v-model="registerForm.pwd" auto-complete="off"></el-input>
+                <el-form-item label="密码" prop="password">
+                    <el-input type="password" placeholder="请输入6-20位字母，数字，减号，下划线的密码" v-model="registerForm.password" auto-complete="off"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" round @click.native.prevent="login" class="register-btn"  :loading="registering">注册</el-button>
+                    <el-button type="primary" round @click.native.prevent="_register" class="register-btn"  :loading="registering">注册</el-button>
                 </el-form-item>
                 <div class="text-wrap"> 
                     已有账号？
@@ -39,61 +39,126 @@
 
 <script>
 import { REG } from 'common/js/validat'
-import { getKaptchaImage } from 'api/register'
+import { getKaptchaImage, check, register } from 'api/register'
 export default {
     data () {
-         return{
+        let validatUsername = (rule, value, callback) => {
+            if (value === '') {
+                callback(new Error('请输入用户名'));
+              }else {
+                this.checkValue('userName', this.registerForm.userName).then((res) => {
+                    if(res.data) {
+                        callback(new Error('该用户名已经存在'))
+                    } else {
+                        callback();
+                    }
+                })
+              }
+        }
+        let validatMobile = (rule, value, callback) => {
+            if (value === '') {
+                callback(new Error('请输入手机号码'));
+              } else if(!REG.MOBILE.test(value)) {
+                callback(new Error('请输入有效的手机号码'));
+              } else {
+                this.checkValue('mobile', this.registerForm.mobile).then((res) => {
+                    if(res.data) {
+                        callback(new Error('该手机号已被注册'))
+                    } else {
+                        callback();
+                    }
+                })
+            }
+        }
+        let validatValidateCode = (rule, value, callback) => {
+            if (value === '') {
+                callback(new Error('请输入验证码'));
+            }else {
+                callback()
+            }
+        }
+        let validatePsd = (rule, value, callback) => {
+            if (value === '') {
+                callback(new Error('请输入密码'));
+            }else if (!REG.PSD.test(value)) {
+                callback(new Error('请输入6-20位字母，数字，减号，下划线的密码'))
+            }else {
+                callback();
+            }
+        }
+        return{
             labelPosition: 'top',
             isRememberPsd: true,
             registering: false,
             registerForm: {
                 userName:'',
-                pwd:'',
-                mobile:'13143372091',
+                password:'',
+                mobile:'',
                 validateCode:''
             },
             rules: {
-               
+               userName: [
+                    {validator: validatUsername, trigger: 'blur' }
+                ],
+               mobile: [
+                    {validator: validatMobile, trigger: 'blur' }
+                ],
+               validateCode: [
+                    {validator: validatValidateCode, trigger: 'blur' }
+                ],
+               password: [
+                    {validator: validatePsd, trigger: 'blur' }
+                ]
             },
             validateImg: ''
         }
     },
     methods:{
         getImg(){
-            getKaptchaImage(this.registerForm.mobile).then((res) => {
-                // this.validateImg = res
-                this.handleImg(res)
-                // return 'data:image/png;base64,' + btoa(new Uint8Array(res).reduce((data, byte) => {
-                //         data + String.fromCharCode(byte), ''
-                //     }).then(data => {
-                //         console.log(data)
-                //     })
-                // )
+            if(this.registerForm.mobile=='' || !REG.MOBILE.test(this.registerForm.mobile)) {
+                this.$message.error("请输入有效的手机号")
+            } else {
+                this.checkValue('mobile', this.registerForm.mobile).then((res) => {
+                    if(res.data) {
+                        this.$message.error("该手机号已被注册")
+                    } else {
+                        getKaptchaImage(this.registerForm.mobile).then((res) => {
+                                this.validateImg = res
+                        })
+                    }
+                })
+            }
+        },
+        checkValue(checkname,checkvalue) {
+            return check(checkname, checkvalue).then((res) => {
+                return  Promise.resolve(res)
             })
         },
-        handleImg (data){
-            // let img =  document.getElementById("vImg")
-            // img.src = window.URL.createObjectURL(data)
-            // console.log(imgObj)
-            // img.onload = function(){
-            //      window.URL.revokeObjectURL(this.src)
-            //     //  console.log(imgObj)
-            // }
-            var blob = new Blob([data], {type: 'image/jpeg'})
-            // var reader = new FileReader()
-            // reader.onload = function(evt){  
-            //     if(evt.target.readyState == FileReader.DONE){  
-            //         var url = evt.target.result; 
-            //         console.log(url) 
-            //         document.getElementById('vImg').src=url
-            //     }  
-            //    // console.log(reader.result) 
-            // }  
-            // reader.readAsDataURL(blob)
-            var url = window.URL.createObjectURL(blob);
-            document.getElementById('vImg').src=url
-            console.log(url)
-           
+        _register() {
+            this.$refs.registerForm.validate((valid) => {
+            if (valid) {
+                this.registering = true
+                console.log(this.registerForm)
+                register(this.registerForm).then((res) => {
+                    console.log(res)
+                    this.registering = false
+                    const { success, msg, data } = res
+                    if (success) {
+                        this.$message({
+                            message: '注册成功，请在登录页登录',
+                            type: 'success',
+                            duration: 3 * 1000
+                        })
+                       this.$router.push('/login')
+                         
+                    } else {
+                       this.$message.error(res.msg)
+                    }
+                })  
+            } else {
+                return false
+            }
+         })
         }
     }
 
@@ -129,7 +194,6 @@ export default {
     display: inline-block;
     margin-left: 5px;
     width: 25%;
-    border: 1px solid #b3d8ff;
     height: 40px;
     vertical-align: middle;
     border-radius: 4px;
@@ -141,7 +205,6 @@ export default {
     width: 100%;
     height: 100%;
     outline: none;
-    border-radius: 4px;
     border: none;
 }
 </style>
