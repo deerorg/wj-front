@@ -3,10 +3,9 @@ const bus = new Vue({
   data () {
     return {
       user: {},
-      wj: {
-        id: '',
-        status: ''
-      }
+      wj: {},
+      singleq: 0, // 0为不触发，1为添加，2为修改
+      singleque: {}
     }
   }
 })

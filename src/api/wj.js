@@ -108,3 +108,28 @@ export function deletOp (id, userid) {
     return Promise.resolve(res.data)
   })
 }
+
+export function addQuewithOptions (queinfor) {
+  const url = '/test/add/contains/options'
+  return service.post(url, queinfor).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+export function updateQuewithOptions (queinfor) {
+  const url = '/test/update/insert/contains/options'
+  return service.post(url, queinfor).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+export function imgUpload (id, imgbase64) {
+  const url = '/img/upload'
+  const data = {
+    createUser: id,
+    imgBase64: imgbase64
+  }
+  return service.post(url, data).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}

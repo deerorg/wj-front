@@ -60,7 +60,6 @@
 import { getWjList, addWj, deletWj, UpdateWj } from 'api/wj'
 import { fliter } from 'common/js/validat'
 import { getId } from 'store/store'
-import bus from 'store/bus'
 const PAGESIZE = 10
 export default {
     data() {
@@ -129,7 +128,6 @@ export default {
                                 type: 'success',
                                 duration: 1 * 1000
                             })
-                            bus.wj.id = res.data.id
                             this.$router.push(`/edit:${res.data.id}`) 
                         } else {
                              this.$message.error(res.msg)
@@ -142,7 +140,6 @@ export default {
         },
         edit(item) {
             if(item.status === '0') {
-                bus.wj.id = item.id
                 this.$router.push({path: `/edit:${item.id}`})
             } else {
                 this.$message.error('问卷已发布，无法编辑问卷')
@@ -150,7 +147,6 @@ export default {
             
         },
         manage(item){
-            bus.wj.id = item.id
             this.$router.push(`/wjmanagement/sentwj:${item.id}`)
            
         },
