@@ -28,9 +28,9 @@
                     <el-form-item class="queitem">
                         <input type="file" class="upload_btn" @change="handleImg($event, index)"  accept="image/jpeg,image.jpg,image/png," />
                         <div class="upload__tip">支持jpg/jpeg/png格式的图片且大小不超过 2MB</div>
-                        <div class="uploadimg-box" v-if="item.imgbase64">
+                        <div class="uploadimg-box" v-show="item.imgbase64">
                             <img :src="item.imgbase64">
-                            <i class="el-icon-close"></i>
+                            <i class="el-icon-close" @click="removeImg(index)"></i>
                         </div>
                     </el-form-item>
                     <el-button type="text" size="mini" class="fr" @click="deletOption(index)">删除</el-button>
@@ -114,7 +114,6 @@ export default {
             else if(newstatus === 2) {
                 this.preModifySingle()
                 this.currentStatus = 2
-                console.log(this.modifyque)
             }
         }
     },
@@ -143,7 +142,10 @@ export default {
         },
         preModifySingle () {
            // 拷贝而非关联
-            let tempObj = Object.assign({}, this.modifyque) 
+         //   let tempObj = Object.assign({}, this.modifyque) 
+           let tempObj = JSON.parse(JSON.stringify(this.modifyque))
+          // console.log('原对象')
+          // console.log(tempObj)
             this.singleque.testName = tempObj.testName
             this.singleque.id = tempObj.id
             this.singleque.required = tempObj.required
@@ -151,17 +153,21 @@ export default {
             // this.singleque.optionList = this.modifyque.optionList
             for(let i =0; i < tempObj.optionList.length; i++){
                 if(tempObj.optionList[i].img) {
-                    imgUpload(getId(), tempObj.optionList[i].img).then((res) => {
-                        if(res.success) {
-                            tempObj.optionList[i].imgbase64 = tempObj.optionList[i].img
-                            tempObj.optionList[i].img = res.data
-                        }
-                    }) 
+                    // imgUpload(getId(), tempObj.optionList[i].img).then((res) => {
+                    //     if(res.success) {
+                    //         tempObj.optionList[i].imgbase64 = tempObj.optionList[i].img
+                    //         tempObj.optionList[i].img = res.data
+                    //     }
+                    // }) 
+                    tempObj.optionList[i].imgbase64 = tempObj.optionList[i].img
+                    tempObj.optionList[i].img = ''
                 } else  tempObj.optionList[i].imgbase64 = ''
             }
             this.singleque.optionList = tempObj.optionList
-            console.log(this.singleque)
-            this.dialogWjSingleQue = true
+            // console.log(this.singleque)
+            setTimeout(() => {
+                this.dialogWjSingleQue = true
+            }, 800 )
             this.$bus.singleq = 0
         },
         handleImg(e, index){
@@ -198,6 +204,8 @@ export default {
         },
         removeImg(index) {
             console.log(index)
+            this.singleque.optionList[index].img = ''
+            this.singleque.optionList[index].imgbase64 = ''
         },
         deletOption(index){
             this.singleque.optionList.splice(index, 1)
@@ -222,7 +230,9 @@ export default {
         },
         _addQuewithOptions (){
             this.$refs.singlequeForm.validate((valid) => {
+                console.log(this.singleque)
                 if (valid) {
+                    let req = this.singleque.required ? '1': '0'
                     const queinfor = {
                         test: {
                             createUser: getId(),
@@ -232,7 +242,7 @@ export default {
                             paperId: getIdfromUrl(),
                             relationTest: '',
                             remark: '',
-                            required: this.singleque.required,
+                            required: req,
                             testName: this.singleque.testName,
                             testType: '1',
                             viewControl: this.singleque.viewControl
@@ -240,15 +250,40 @@ export default {
                         options:[]
                     }
                     for(let i=0; i < this.singleque.optionList.length; i++) {
-                       // if()
+                        if(this.singleque.optionList[i].optionType === '1' &&  this.singleque.optionList[i].content != ''){
+                            delete this.singleque.optionList[i].imgbase64
+                            queinfor.options.push(this.singleque.optionList[i])
+                          
+                        } else if(this.singleque.optionList[i].optionType === '2' &&  this.singleque.optionList[i].img != ''){
+                            let tempimg = this.singleque.optionList[i].imgbase64
+                            delete this.singleque.optionList[i].imgbase64
+                            queinfor.options.push(this.singleque.optionList[i])
+                            this.singleque.optionList[i].imgbase64 = tempimg
+                        }
                     }
+                    console.log(this.singleque)
+                    addQuewithOptions(queinfor).then((res) => {
+                        if(res.success) {
+                            for(let i=0; i < this.singleque.optionList.length; i++) {
+                                if((this.singleque.optionList[i].optionType === '1'&&this.singleque.optionList[i].content === '')||(this.singleque.optionList[i].optionType === '2' &&  this.singleque.optionList[i].img === '')){
+                                  this.singleque.optionList[i].splice(i,1)   
+                                } else if(this.singleque.optionList[i].optionType === '2' && this.singleque.optionList[i].img !== ''){
+                                    this.singleque.optionList[i].img = this.singleque.optionList[i].imgbase64
+                                    delete this.singleque.optionList[i].imgbase64
+                                }
+                            }
+                            console.log('之后')
+                            console.log(this.singleque)
+                            // 和父组件的wj对比一下然后传值给wj去push这道题
+                        }
+                    })
                 } else{
                     return false
                 }
             })
         },
         _updateQuewithOptions() {
-
+            // 循环把有imgbase64但没有img的拿到它的img,然后再更新，更新的和添加的类似，然后到父组件的问卷那里去修改，但是要知道是哪道题
         }
     }    
 }
@@ -284,14 +319,14 @@ export default {
 }
 .uploadimg-box{
     position: relative;
-    padding: 10px 10px 10px 90px;
-    height: 80px;
+    padding: 4px 4px 4px 90px;
+    height: 70px;
     width: 80%;
     border-radius: 6px;
     border: 1px solid #c0ccda;
 }
 .uploadimg-box > img{
-    width: 70px;
+    width: 100px;
     height: 70px;
     float: left;
     position: relative;
