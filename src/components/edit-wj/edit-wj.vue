@@ -56,7 +56,7 @@
                 <el-button type="primary"  @click="modify">确 定</el-button>
             </div>
         </el-dialog>
-        <single-q></single-q>
+        <single-q @pushSingle="pushSingle" @modifySingle="modifySingle"></single-q>
     </div>
     
 </template>
@@ -132,25 +132,6 @@ export default {
            let h = screenH - headH - 2
            document.getElementsByClassName("edit-area")[0].style.minHeight = h + 'px' 
         },
-        handleImg(file, fileList) {
-            let that = this
-            const isLt2M = file.size / 1024 / 1024 < 2;
-            if (!isLt2M) {
-                that.imgList = []
-                that.$message.error('上传头像图片大小不能超过 2MB!');
-            } else {
-                    fetch(file.url).then(data => {
-                    let blob = data.blob()
-                    return blob
-                }).then(blob => {
-                    let reader = new window.FileReader()
-                    reader.onloadend = function () {
-                        that.wjOption.img = reader.result
-                    }
-                    reader.readAsDataURL(blob)
-                }) 
-            }
-        },
         magnifyImg(data){
             this.$alert(`<img src="${data}" style="width:auto;height:auto;max-width:910px;max-height:620px;">`, '', {
                 dangerouslyUseHTMLString: true,
@@ -219,6 +200,21 @@ export default {
                 this.$bus.singleque = this.wj.testList[index]
             }
             this.$bus.singleq = status
+        },
+        pushSingle(queinfor){
+            this.wj.testList.push(queinfor)
+        },
+        modifySingle(queinfor){
+            console.log(queinfor.id)
+            console.log(this.wj.testList)
+            for(let i = 0; i<this.wj.testList.length; i++) {
+                console.log(this.wj.testList[i].id)
+                if(this.wj.testList[i].id === queinfor.id) {
+                    this.wj.testList[i] = queinfor
+                    console.log(this.wj.testList[i])
+                    return
+                }
+            }
         },
         preView() {
             let routeData = this.$router.resolve({ path: `/wjpreview:${getIdfromUrl()}`})

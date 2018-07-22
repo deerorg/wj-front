@@ -143,7 +143,7 @@ export default {
         preModifySingle () {
            // 拷贝而非关联
          //   let tempObj = Object.assign({}, this.modifyque) 
-           let tempObj = JSON.parse(JSON.stringify(this.modifyque))
+           let tempObj = JSON.parse(JSON.stringify(this.modifyque)) // 但是这样原来的数据双向绑定也失效了
           // console.log('原对象')
           // console.log(tempObj)
             this.singleque.testName = tempObj.testName
@@ -153,21 +153,13 @@ export default {
             // this.singleque.optionList = this.modifyque.optionList
             for(let i =0; i < tempObj.optionList.length; i++){
                 if(tempObj.optionList[i].img) {
-                    // imgUpload(getId(), tempObj.optionList[i].img).then((res) => {
-                    //     if(res.success) {
-                    //         tempObj.optionList[i].imgbase64 = tempObj.optionList[i].img
-                    //         tempObj.optionList[i].img = res.data
-                    //     }
-                    // }) 
                     tempObj.optionList[i].imgbase64 = tempObj.optionList[i].img
                     tempObj.optionList[i].img = ''
                 } else  tempObj.optionList[i].imgbase64 = ''
             }
             this.singleque.optionList = tempObj.optionList
             // console.log(this.singleque)
-            setTimeout(() => {
-                this.dialogWjSingleQue = true
-            }, 800 )
+            this.dialogWjSingleQue = true
             this.$bus.singleq = 0
         },
         handleImg(e, index){
@@ -183,7 +175,7 @@ export default {
             } else {
                 let reader = new FileReader()
                 reader.onload = function (file) {  
-                    console.info(reader.result)
+                   // console.info(reader.result)
                     imgUpload(getId(), reader.result).then((res) => {
                         if(res.success) {
                             that.singleque.optionList[index].img = res.data
@@ -251,10 +243,12 @@ export default {
                     }
                     for(let i=0; i < this.singleque.optionList.length; i++) {
                         if(this.singleque.optionList[i].optionType === '1' &&  this.singleque.optionList[i].content != ''){
+                            this.singleque.optionList[i].img = '' 
                             delete this.singleque.optionList[i].imgbase64
                             queinfor.options.push(this.singleque.optionList[i])
                           
                         } else if(this.singleque.optionList[i].optionType === '2' &&  this.singleque.optionList[i].img != ''){
+                            this.singleque.optionList[i].content = '' // 文字或图片
                             let tempimg = this.singleque.optionList[i].imgbase64
                             delete this.singleque.optionList[i].imgbase64
                             queinfor.options.push(this.singleque.optionList[i])
@@ -266,14 +260,23 @@ export default {
                         if(res.success) {
                             for(let i=0; i < this.singleque.optionList.length; i++) {
                                 if((this.singleque.optionList[i].optionType === '1'&&this.singleque.optionList[i].content === '')||(this.singleque.optionList[i].optionType === '2' &&  this.singleque.optionList[i].img === '')){
-                                  this.singleque.optionList[i].splice(i,1)   
+                                  this.singleque.optionList.splice(i,1)   
                                 } else if(this.singleque.optionList[i].optionType === '2' && this.singleque.optionList[i].img !== ''){
                                     this.singleque.optionList[i].img = this.singleque.optionList[i].imgbase64
                                     delete this.singleque.optionList[i].imgbase64
                                 }
                             }
-                            console.log('之后')
-                            console.log(this.singleque)
+                            // console.log('之后')
+                            // console.log(this.singleque)
+                            let tempqueinfor  = JSON.parse(JSON.stringify(this.singleque)) 
+                            tempqueinfor.testType = '1'
+                            this.$emit('pushSingle', tempqueinfor)
+                            this.dialogWjSingleQue = false
+                            this.$message({
+                                message: '已保存草稿',
+                                type: 'success',
+                                duration: 1 * 1000
+                            })
                             // 和父组件的wj对比一下然后传值给wj去push这道题
                         }
                     })
@@ -284,6 +287,77 @@ export default {
         },
         _updateQuewithOptions() {
             // 循环把有imgbase64但没有img的拿到它的img,然后再更新，更新的和添加的类似，然后到父组件的问卷那里去修改，但是要知道是哪道题
+            this.$refs.singlequeForm.validate((valid) => {
+                if (valid) {
+                     let req = this.singleque.required ? '1': '0'
+                        const queinfor = {
+                        test: {
+                                id: this.singleque.id,
+                                updateUser: getId(),
+                                description: '',
+                                jumpId: 0,
+                                optionControl: '',
+                                relationTest: '',
+                                remark: '',
+                                required: req,
+                                testName: this.singleque.testName,
+                                testType: '1',
+                                viewControl: this.singleque.viewControl
+                            },
+                        options:[]
+                    }
+                    for(let i=0; i < this.singleque.optionList.length; i++) {
+                            if(this.singleque.optionList[i].optionType === '1' &&  this.singleque.optionList[i].content != ''){
+                                this.singleque.optionList[i].img = '' 
+                                delete this.singleque.optionList[i].imgbase64
+                                this.singleque.optionList[i].updateUser = getId()
+                                queinfor.options.push(this.singleque.optionList[i])
+                                
+                            } else if(this.singleque.optionList[i].optionType === '2' &&  this.singleque.optionList[i].imgbase64 != ''){
+                                if(this.singleque.optionList[i].img === '') {
+                                    imgUpload(getId(), this.singleque.optionList[i].imgbase64 ).then((res) => {
+                                        if(res.success) {
+                                            this.singleque.optionList[i].img = res.data
+                                        }
+                                    }) 
+                                }
+                                this.singleque.optionList[i].content = '' // 文字或图片
+                                let tempimg = this.singleque.optionList[i].imgbase64
+                                delete this.singleque.optionList[i].imgbase64
+                                this.singleque.optionList[i].updateUser = getId()
+                                queinfor.options.push(this.singleque.optionList[i])
+                                this.singleque.optionList[i].imgbase64 = tempimg
+                            }
+                    }
+                    console.log(queinfor)
+                    updateQuewithOptions(queinfor).then((res) => {
+                        if(!res.success){ // 这里有点问题，成功后怎么返回的是不成功？
+                            for(let i=0; i < this.singleque.optionList.length; i++) {
+                                if((this.singleque.optionList[i].optionType === '1'&&this.singleque.optionList[i].content === '')||(this.singleque.optionList[i].optionType === '2' &&  this.singleque.optionList[i].img === '')){
+                                  this.singleque.optionList.splice(i,1)   
+                                } else if(this.singleque.optionList[i].optionType === '2' && this.singleque.optionList[i].img !== ''){
+                                    this.singleque.optionList[i].img = this.singleque.optionList[i].imgbase64
+                                    delete this.singleque.optionList[i].imgbase64
+                                }
+                            }
+                            console.log(this.singleque)
+                            let tempqueinfor  = JSON.parse(JSON.stringify(this.singleque)) 
+                            tempqueinfor.testType = '1'
+                            this.$emit('modifySingle', tempqueinfor)
+                            this.dialogWjSingleQue = false
+                            this.$message({
+                                message: '已保存草稿',
+                                type: 'success',
+                                duration: 1 * 1000
+                            })
+                        }
+                    })
+                } else {
+                    return false
+                }
+            })
+            console.log(this.singleque)
+
         }
     }    
 }
