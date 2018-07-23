@@ -32,7 +32,7 @@
                                             {{op.content}}
                                         </span>
                                         <span v-if="op.optionType=='2'">
-                                            <img :src="op.img" class="opimg" @click="magnifyImg(op.img)">
+                                            <img :src="_imgDownload(op.img)" class="opimg" @click="magnifyImg(op.img)">
                                         </span>
                                     </el-radio>
                                 </el-radio-group>
@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import { getWjInfor, UpdateWj, addQuestion, updataQuestion, deleteQue, addOption, updataOption, deletOp } from 'api/wj'
+import { getWjInfor, UpdateWj,  deleteQue, imgDownload } from 'api/wj'
 import { fliter, fliterTag } from 'common/js/validat'
 import { getId, getToken, getIdfromUrl } from 'store/store'
 import { checkLoginState } from 'api/login'
@@ -205,8 +205,6 @@ export default {
             this.wj.testList.push(queinfor)
         },
         modifySingle(queinfor){
-            console.log(queinfor.id)
-            console.log(this.wj.testList)
             for(let i = 0; i<this.wj.testList.length; i++) {
                 console.log(this.wj.testList[i].id)
                 if(this.wj.testList[i].id === queinfor.id) {
@@ -215,6 +213,15 @@ export default {
                     return
                 }
             }
+        },
+        _imgDownload (imgurl) {
+            let imgbase64
+            imgDownload(getId(), imgurl).then((res) => {
+              //  console.log(res.data)
+                return res.data
+                
+            })
+           // return imgbase64
         },
         preView() {
             let routeData = this.$router.resolve({ path: `/wjpreview:${getIdfromUrl()}`})

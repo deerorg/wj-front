@@ -1,4 +1,5 @@
 import service from './axios'
+import querystring from 'querystring'
 
 export function getWjList (pagenum, id, query, pagesize) {
   const url = '/paper/listByPage'
@@ -130,6 +131,17 @@ export function imgUpload (id, imgbase64) {
     imgBase64: imgbase64
   }
   return service.post(url, data).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+export function imgDownload (id, imgurl) {
+  const url = '/img/download'
+  const data = {
+    createUser: id,
+    url: imgurl
+  }
+  return service.post(url, querystring.stringify(data)).then((res) => {
     return Promise.resolve(res.data)
   })
 }
