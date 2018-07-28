@@ -35,8 +35,6 @@ import bus from 'store/bus'
 export default {
     created() {
         this._getWjInfor()
-        this.wjurl = window.location.href.split('#')[0] + 'wjforanswer/pc:' + getIdfromUrl() 
-        this.qrcodeconfig.value = this.wjurl
     },
     data() {
         return {
@@ -66,13 +64,15 @@ export default {
             })
         },
         open() {
-            let routeData = this.$router.resolve({ path: `/wjforanswer/pc:${getIdfromUrl()}`})
+            let routeData = this.$router.resolve({ path: `/wjforanswer/pc:${getIdfromUrl()}?crid=${this.wj.createUser}`})
             window.open(routeData.href, '_blank')
         },
         _getWjInfor() {
             getWjInfor(getIdfromUrl(), getId()).then((res) => {
                 if(res.success) {
                     this.wj = res.data
+                    this.wjurl = window.location.href.split('#')[0] + '#/wjforanswer/pc:' + getIdfromUrl() + encodeURI(`?crid=${this.wj.createUser}`)
+                    this.qrcodeconfig.value = this.wjurl
                 } else{
                     this.$message.error(res.msg)
                 }

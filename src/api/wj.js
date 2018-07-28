@@ -1,6 +1,7 @@
 import service from './axios'
 import querystring from 'querystring'
-
+import URLConfig from './config'
+import { getToken } from 'store/store'
 export function getWjList (pagenum, id, query, pagesize) {
   const url = '/paper/listByPage'
   const data = {
@@ -141,7 +142,31 @@ export function imgDownload (id, imgurl) {
     createUser: id,
     url: imgurl
   }
-  return service.post(url, querystring.stringify(data)).then((res) => {
+  // return service.post(url, querystring.stringify(data)).then((res) => {
+  //   if (res.data.success) {
+  //     return Promise.resolve(res.data.data) // 直接返回base64
+  //   } else {
+  //     return Promise.reject(console.error('cannot download the img')
+  //     )
+  //   }
+  // })
+  const xhr = new XMLHttpRequest()
+  xhr.open('post', URLConfig.BASE_API + url)
+  xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
+  xhr.setRequestHeader('E-User-Token', getToken())
+  xhr.send(querystring.stringify(data))
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+      let res = JSON.parse(xhr.responseText)
+      //  console.log(res.data)
+      return res.data
+    }
+  }
+}
+
+export function submitWj (answerinfor) {
+  const url = '/userpaper/add'
+  return service.post(url, answerinfor).then((res) => {
     return Promise.resolve(res.data)
   })
 }

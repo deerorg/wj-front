@@ -64,8 +64,19 @@ export function deleUser () {
 
 export function getIdfromUrl () {
   let url = window.location.href
-  if (url.indexOf(':') > 0) {
+  if (url.indexOf('=') > 0) {
+    return decodeURI((url.split(/[:?]/))[url.split(/[:?]/).length - 2])
+  } else if (url.indexOf('=') < 0) {
     return decodeURI((url.split(':'))[url.split(':').length - 1])
+  } else {
+    return ''
+  }
+}
+
+export function getCreatUserId () {
+  let url = window.location.href
+  if (url.indexOf('=') > 0) {
+    return decodeURI((url.split('='))[url.split('=').length - 1])
   } else { return '' }
 }
 // 设置cookie,登录名 name, id, token,（分开）

@@ -107,7 +107,9 @@ export default {
                             storeUserInfor(data.user) 
                             // loding
                             // 跳转路由
-                            this.$router.push('/usermanagement')
+                           // console.log(this.$router)
+                           // console.log(this.$route.query.redirect)
+                            this.$router.push(this.$route.query.redirect ||'/usermanagement')
                          }
                     } else {
                        this.$message.error(res.msg)

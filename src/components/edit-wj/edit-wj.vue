@@ -66,6 +66,8 @@ import { getWjInfor, UpdateWj,  deleteQue, imgDownload } from 'api/wj'
 import { fliter, fliterTag } from 'common/js/validat'
 import { getId, getToken, getIdfromUrl } from 'store/store'
 import { checkLoginState } from 'api/login'
+import querystring from 'querystring'
+import URLConfig from 'api/config'
 import SingleQ from './singleQ'
 export default {
     beforeRouteEnter (to, from, next) {
@@ -107,7 +109,8 @@ export default {
                 paperName: [
                     {validator: validitTitle, trigger: 'blur'}
                 ]
-            }
+            },
+            imgdata: ''
         }
     },
     created() {
@@ -215,13 +218,32 @@ export default {
             }
         },
         _imgDownload (imgurl) {
-            let imgbase64
-            imgDownload(getId(), imgurl).then((res) => {
-              //  console.log(res.data)
-                return res.data
-                
-            })
-           // return imgbase64
+            // let imgdata
+            // let getimg = async function () {
+            //     imgdata  = await imgDownload(getId(), imgurl)
+            //     console.log(imgdata)
+            //   //  that.tempReturn(that.imgdata)
+            // }
+            // await getimg()
+            setTimeout(function(){
+                const url = '/img/download'
+                const data = {
+                    createUser: getId(),
+                    url: imgurl
+                }
+                const xhr = new XMLHttpRequest()
+                xhr.open('post', URLConfig.BASE_API + url)
+                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
+                xhr.setRequestHeader('E-User-Token', getToken())
+                xhr.send(querystring.stringify(data))
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                    let res = JSON.parse(xhr.responseText)
+                    //  console.log(res.data)
+                    return res.data
+                    }
+                }
+            },100)
         },
         preView() {
             let routeData = this.$router.resolve({ path: `/wjpreview:${getIdfromUrl()}`})
