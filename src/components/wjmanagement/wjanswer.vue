@@ -42,7 +42,19 @@ export default {
             checkLoginState().then((res) => {
                 if(res.data.data === null && res.data.success) {
                     if(getIdfromUrl()) {
-                        next() 
+                           getAnswerCount(getIdfromUrl()).then((res) => {
+                                if(res.success) {
+                                    if(res.data === 0 ) {
+                                        this.$message({
+                                            message: '此问卷还未收到答卷, 无法查看答卷',
+                                            type: 'warning'
+                                        });
+                                        next(from.path)
+                                    } else{
+                                        next()
+                                    }
+                                }
+                            }) 
                     } else{
                         next(from.path)
                     }
@@ -50,7 +62,7 @@ export default {
             })
         } else {
            next('/login')
-        }  
+        }
     },
     data() {
         return{
@@ -67,13 +79,15 @@ export default {
         this._getAnswerWjList()
     },
     methods: {
-        handleCurrentChange () {
-
+        handleCurrentChange (num) {
+            this.currentpage = num
+            this._getAnswerWjList()
         },
         _getAnswerWjList () {
             getAnswerWjList(getIdfromUrl(), this.currentpage, this.pagesize).then((res) => {
                 if(res.success) {
                     this.total = res.data.total
+                    this.totalpages = res.data.pages
                     this.answerList = res.data.list
                     console.log(this.answerList)
                 }
@@ -91,10 +105,8 @@ export default {
         getDetail(id){
             this.$bus.answerId = id
             this.$bus.wj = this.wj
-            this.$bus.showdetail = true
-           
+            this.$bus.showdetail = true   
         }
-
     }
 
 }

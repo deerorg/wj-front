@@ -7,8 +7,46 @@
 </template>
 
 <script>
+import { getWjInfor, getAnswerCount } from 'api/wj'
+import { getId, getToken, getIdfromUrl } from 'store/store'
+import { checkLoginState } from 'api/login'
 export default {
-    
+    beforeRouteEnter (to, from, next) {
+        if(getToken()) {
+            checkLoginState().then((res) => {
+                if(res.data.data === null && res.data.success) {
+                    if(getIdfromUrl()) {
+                           getAnswerCount(getIdfromUrl()).then((res) => {
+                                if(res.success) {
+                                    if(res.data === 0 ) {
+                                        this.$message({
+                                            message: '此问卷还未收到答卷, 无法查看答卷',
+                                            type: 'warning'
+                                        });
+                                        next(from.path)
+                                    } else{
+                                        next()
+                                    }
+                                }
+                            }) 
+                    } else{
+                        next(from.path)
+                    }
+                } else { next('/login') }
+            })
+        } else {
+           next('/login')
+        }
+    },
+    data(){
+        return {
+
+        }
+    },
+    methods:{
+
+    }
+
 }
 </script>
 
