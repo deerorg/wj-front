@@ -58,6 +58,11 @@ const AnalyzeWj = (resolve) => {
     resolve(module)
   })
 }
+const WjAnswer = (resolve) => {
+  import('components/wjmanagement/wjanswer').then((module) => {
+    resolve(module)
+  })
+}
 
 const Preview = (resolve) => {
   import('components/preview/preview').then((module) => {
@@ -167,6 +172,14 @@ export default new Router({
             title: '答卷分析_问卷管家'
           },
           component: AnalyzeWj
+        },
+        {
+          path: 'wjanswer:id',
+          name: 'answer',
+          meta: {
+            title: '答卷_问卷管家'
+          },
+          component: WjAnswer
         }
       ],
       component: WjManagement

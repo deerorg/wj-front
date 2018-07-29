@@ -56,7 +56,8 @@ export default {
             wj:{},
             answer:[],
             submiting: false,
-            submited: false
+            submited: false,
+            status: '0'
         }
     },
     created() {
@@ -70,7 +71,7 @@ export default {
     methods:{
         beforeanswer() {
             if(getUserAgent() !== '3') {
-                    this.$router.push(`/wjforanswer/ph:${getIdfromUrl()}`)
+                    this.$router.push(`/wjforanswer/ph:${getIdfromUrl()}?crid=${getCreatUserId()}`)
                 }
             if(getToken()) {
                 checkLoginState().then((res) => {
@@ -99,7 +100,7 @@ export default {
         },
         _getWjInfor() {
             getWjInfor(getIdfromUrl(), getCreatUserId()).then((res) => {
-                if(res.success) {
+                if(res.success && res.data.status === '1') {
                     this.wj = res.data
                     for(let i = 0; i < this.wj.testList.length; i++) {
                         this.answer.push({
@@ -111,6 +112,12 @@ export default {
                     }
                     console.log(this.answer)
                     this.loading = false
+                } else if(res.success && res.data.status === '0'){
+                    this.$message.error('该问卷还未发布')
+                    return
+                } else if(res.success && res.data.status === '2'){
+                    this.$message.error('该问卷已暂停发布')
+                    return
                 }
             })
         },
@@ -124,7 +131,7 @@ export default {
                     channel: this.channel,
                     paperId: getIdfromUrl(),
                     remark: '',
-                    status: '1',
+                    status: this.status,
                     userId: getId(),
                     tAnswerVos: []
                 }
@@ -166,7 +173,9 @@ export default {
                 if(this.answer[i].required === '1' && this.answer[i].opindex === ''){
                     this.submiting = false
                     return false
-                } 
+                } else if(this.answer[i].required === '0' && this.answer[i].opindex === ''){
+                    this.status = '0'
+                }
             }
             return true
         },

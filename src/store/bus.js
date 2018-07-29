@@ -4,6 +4,8 @@ const bus = new Vue({
     return {
       user: {},
       wj: {},
+      showdetail: false,
+      answerId: '',
       singleq: 0, // 0为不触发，1为添加，2为修改
       singleque: {}
     }

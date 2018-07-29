@@ -33,6 +33,21 @@ import { getId, getToken, getIdfromUrl } from 'store/store'
 import { checkLoginState } from 'api/login'
 import bus from 'store/bus'
 export default {
+     beforeRouteEnter (to, from, next) {
+        if(getToken()) {
+            checkLoginState().then((res) => {
+                if(res.data.data === null && res.data.success) {
+                    if(getIdfromUrl()) {
+                        next() 
+                    } else{
+                        next(from.path)
+                    }
+                } else { next('/login') }
+            })
+        } else {
+           next('/login')
+        }  
+    },
     created() {
         this._getWjInfor()
     },

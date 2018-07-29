@@ -170,3 +170,41 @@ export function submitWj (answerinfor) {
     return Promise.resolve(res.data)
   })
 }
+
+export function getAnswerCount (id) {
+  const url = '/userpaper/count'
+  const data = {
+    paperId: id
+  }
+  return service.get(url, {
+    params: data
+  }).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+export function getAnswerWjList (id, pagenum, pagesize) {
+  const url = '/userpaper/listByPage'
+  const data = {
+    paperId: id,
+    pageNum: pagenum,
+    pageSize: pagesize
+  }
+  return service.get(url, {
+    params: data
+  }).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+export function getAnswerDtail (id) {
+  const url = '/userpaper/query/userpaper'
+  const data = {
+    userPaperId: id
+  }
+  return service.get(url, {
+    params: data
+  }).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}

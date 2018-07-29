@@ -25,8 +25,8 @@
                     <el-submenu index="4">
                         <template slot="title"><i class="el-icon-setting"></i>答卷分析</template>
                         <el-menu-item-group>
-                        <el-menu-item index="4-1">答卷</el-menu-item>
-                        <el-menu-item index="4-2">数据分析</el-menu-item>
+                        <el-menu-item index="4-1" @click="answerwj">答卷</el-menu-item>
+                        <el-menu-item index="4-2" @click="analyzewj">数据分析</el-menu-item>
                         </el-menu-item-group>
                     </el-submenu>
                 </el-menu>
@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import { getWjInfor } from 'api/wj'
+import { getWjInfor, getAnswerCount } from 'api/wj'
 import { getId, getToken, getIdfromUrl } from 'store/store'
 import { checkLoginState } from 'api/login'
 import bus from 'store/bus'
@@ -85,6 +85,48 @@ export default {
                 this.$message.error('问卷已发布，无法编辑问卷')
             }   
         },
+        answerwj() {
+            if(this.wj.status === '0') {
+                this.$message({
+                    message: '此问卷还未发布, 无法查看答卷',
+                    type: 'warning'
+                });
+            } else {
+                getAnswerCount(getIdfromUrl()).then((res) => {
+                    if(res.success) {
+                        if(res.data === 0 ) {
+                        this.$message({
+                            message: '此问卷还未收到答卷, 无法查看答卷',
+                            type: 'warning'
+                        });
+                        } else {
+                            this.$router.push({path: `/wjmanagement/wjanswer:${getIdfromUrl()}`})
+                        }
+                    }
+               })
+            }
+        },
+        analyzewj(){
+            if(this.wj.status === '0') {
+                this.$message({
+                    message: '此问卷还未发布, 无法分析答卷',
+                    type: 'warning'
+                });
+            } else {
+                getAnswerCount(getIdfromUrl()).then((res) => {
+                    if(res.success) {
+                        if(res.data === 0 ) {
+                        this.$message({
+                            message: '此问卷还未收到答卷，无法分析答卷',
+                            type: 'warning'
+                        });
+                        } else {
+                            this.$router.push({path: `/wjmanagement/analyzewj:${getIdfromUrl()}`})
+                        }
+                    }
+                })
+            }
+        },
         _getWjInfor() {
             getWjInfor(getIdfromUrl(), getId()).then((res) => {
                 if(res.success) {
@@ -93,7 +135,7 @@ export default {
                     this.$message.error(res.msg)
                 }
             })
-        },
+        }
     }
 }
 </script>

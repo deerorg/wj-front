@@ -238,6 +238,10 @@ export default {
                 }
             })
         },
+        preview(item){
+            let routeData = this.$router.resolve({ path: `/wjpreview:${item.id}`})
+            window.open(routeData.href, '_blank')
+        },
         handleCurrentChange(num) {
             this.currentpage = num
             this._getWjList()
