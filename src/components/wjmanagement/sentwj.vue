@@ -1,6 +1,7 @@
 <template>
     <div class="sentwj">
-        <el-alert title="该问卷还未发布，发布后才可发送" type="warning" v-show="wj.status==='0'||wj.status==='2'"></el-alert>
+        <el-alert title="该问卷还未发布，发布后才可发送" type="warning" v-show="wj.status==='0'||wj.status==='4'"></el-alert>
+        <el-alert title="该问卷已被禁用，无法发送" type="warning" v-show="wj.status==='2'"></el-alert>
         <div class="send-box" >
             <div v-show="wj.status==='1'">
                 <h3 class="title">链接发送</h3>
@@ -17,7 +18,7 @@
                     <vue-qr :logoSrc="qrcodeconfig.imagePath" :text="qrcodeconfig.value" height="200" width="200"></vue-qr>
                 </div>
             </div>
-            <div v-show="wj.status==='0'||wj.status==='2' ">
+            <div v-show="wj.status==='0'||wj.status==='4' ">
                 <h3 class="title">问卷发布</h3>
                 <el-button class="publish_btn" type="primary" @click="publish">发布</el-button>
             </div>
@@ -124,7 +125,7 @@ export default {
                 }).catch(() => {
                     return
                 })
-            } else if(this.wj.status == '2') {
+            } else if(this.wj.status == '4') {
                 UpdateWj(wjinfor).then((res) => {
                     if(res.success){
                     this.wj.status = '1'

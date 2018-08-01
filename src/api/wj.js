@@ -172,7 +172,7 @@ export function submitWj (answerinfor) {
 }
 
 export function getAnswerCount (id) {
-  const url = '/userpaper/count'
+  const url = '/userpaper/count/ids'
   const data = {
     paperId: id
   }

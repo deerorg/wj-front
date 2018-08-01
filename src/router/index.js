@@ -79,6 +79,26 @@ const WjPh = (resolve) => {
     resolve(module)
   })
 }
+const Admin = (resolve) => {
+  import('components/admin/admin').then((module) => {
+    resolve(module)
+  })
+}
+const UserAdmin = (resolve) => {
+  import('components/admin/user-admin').then((module) => {
+    resolve(module)
+  })
+}
+const RoleAdmin = (resolve) => {
+  import('components/admin/role-admin').then((module) => {
+    resolve(module)
+  })
+}
+const MenuAdmin = (resolve) => {
+  import('components/admin/menu-admin').then((module) => {
+    resolve(module)
+  })
+}
 
 export default new Router({
   routes: [
@@ -105,6 +125,41 @@ export default new Router({
         title: '注册_问卷管家'
       },
       component: Register
+    },
+    {
+      path: '/admin',
+      name: '/admin/user',
+      redirect: '',
+      meta: {
+        title: '权限管理_问卷管家'
+      },
+      component: Admin,
+      children: [
+        {
+          path: 'user',
+          name: 'user',
+          meta: {
+            title: '用户管理_问卷管家'
+          },
+          component: UserAdmin
+        },
+        {
+          path: 'role',
+          name: 'role',
+          meta: {
+            title: '角色管理_问卷管家'
+          },
+          component: RoleAdmin
+        },
+        {
+          path: 'menu',
+          name: 'menu',
+          meta: {
+            title: '菜单管理_问卷管家'
+          },
+          component: MenuAdmin
+        }
+      ]
     },
     {
       path: '/usermanagement',

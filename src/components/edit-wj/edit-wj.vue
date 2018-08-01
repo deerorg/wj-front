@@ -147,10 +147,14 @@ export default {
         _getWjInfor() {
             getWjInfor(getIdfromUrl(), getId()).then((res) => {
                 if(res.success) {
-                    this.wj = res.data
-                    this.wjHead.paperName = this.wj.paperName
-                    this.wjHead.description = this.wj.description
-                    this.loading = false
+                    if(res.data.status !== '0') {
+                        this.$message.error('该问卷已发布过或处于禁用，无法编辑')
+                    } else {
+                        this.wj = res.data
+                        this.wjHead.paperName = this.wj.paperName
+                        this.wjHead.description = this.wj.description
+                        this.loading = false
+                    }
                 } else{
                     this.$message.error(res.msg)
                 }

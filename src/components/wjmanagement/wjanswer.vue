@@ -1,6 +1,6 @@
 <template>
     <div class="wjanswer">
-        <h3>答卷列表——{{wj.paperName}}</h3>
+        <h3>答卷列表——{{wj.paperName}}</h3><span style="color: #666">答卷数： {{total}}</span>
         <div class="answerlist">
             <div class="answer-item" v-for="(item, index) in answerList" :key="index">
                 <div class="wjinfor fl">
@@ -44,11 +44,8 @@ export default {
                     if(getIdfromUrl()) {
                            getAnswerCount(getIdfromUrl()).then((res) => {
                                 if(res.success) {
-                                    if(res.data === 0 ) {
-                                        this.$message({
-                                            message: '此问卷还未收到答卷, 无法查看答卷',
-                                            type: 'warning'
-                                        });
+                                    if(res.data.length === 0 ) {
+                                        alert('此问卷还未收到答卷, 无法查看答卷')
                                         next(from.path)
                                     } else{
                                         next()
@@ -117,6 +114,8 @@ export default {
 .wjanswer{
     padding: 20px;
     & > h3{
+        display: inline-block;
+        margin-right: 10px;
         color: #666666;
     }
 }

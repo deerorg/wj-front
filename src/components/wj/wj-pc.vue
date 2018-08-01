@@ -115,8 +115,11 @@ export default {
                 } else if(res.success && res.data.status === '0'){
                     this.$message.error('该问卷还未发布')
                     return
-                } else if(res.success && res.data.status === '2'){
+                } else if(res.success && res.data.status === '4'){
                     this.$message.error('该问卷已暂停发布')
+                    return
+                } else if(res.success && res.data.status === '2') {
+                    this.$message.error('该问卷已被金庸')
                     return
                 }
             })

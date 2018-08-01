@@ -15,18 +15,20 @@
                 <div class="wjinfor fl">
                     <span class="infor_title textcut">{{item.paperName}}</span>
                     <span>ID: {{item.id}}</span>
-                    <span>答卷：0</span>
+                    <!-- <span>答卷：0</span> -->
                     <span>创建于：{{item.createTime}}</span>
                     <span v-if="item.status==0">草稿</span>
                     <span v-if="item.status==1">运行中</span>
-                    <span v-if="item.status==2">停运中</span>
+                    <span v-if="item.status==2">禁用</span>
+                    <span v-if="item.status==4">停运中</span>
                 </div>
                 <div class="operate fr">
-                    <el-button v-show="item.status==0||item.status==2" class="operate_btn" type="text" @click="operate(item, index)"><i style="padding-right:5px;" class="fa fa-play"></i>运行</el-button>
+                    <el-button v-show="item.status==0||item.status==4" class="operate_btn" type="text" @click="operate(item, index)"><i style="padding-right:5px;" class="fa fa-play"></i>运行</el-button>
                     <el-button v-show="item.status==1" class="operate_btn" type="text"  @click="stop(item, index)"><i style="padding-right:5px;" class="fa fa-pause"></i>停止</el-button>
                     <el-button class="operate_btn" type="text" icon="el-icon-edit" @click="edit(item)">编辑</el-button>
                     <el-button class="operate_btn" type="text" icon="el-icon-view" @click="preview(item)">预览</el-button>
                     <el-button class="operate_btn" type="text" icon="el-icon-document" @click="manage(item)">发送/分析</el-button>
+                    <el-button v-show="item.status!=2" class="operate_btn" type="text"  icon="el-icon-warning" @click="forbid(item,index)">禁用</el-button>
                     <el-button class="operate_btn" type="text"  icon="el-icon-delete" @click="delet(item,index)">删除</el-button>
                 </div>
             </div>
@@ -167,6 +169,37 @@ export default {
                     } else {
                         this.$message.error(res.msg)
                    }
+                })
+            }).catch(() => {
+                return
+            })
+        },
+        forbid(item, index){
+            let wjinfor = {
+                description: item.description,
+                id: item.id,
+                paperName: item.paperName,
+                paperType: '1',
+                remark: '',
+                status: '2',
+                updateUser: getId() 
+            }
+            this.$confirm('是否禁用该问卷?禁用后该问卷无法重新启用但仍可查看。', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                UpdateWj(wjinfor).then((res) => {
+                    if(res.success){
+                    this.list[index].status = '2'
+                        this.$message({
+                                message: '问卷已禁用',
+                                type: 'success',
+                                duration: 1 * 1000
+                        })
+                    } else {
+                        this.$message.error(res.msg)
+                    }
                 })
             }).catch(() => {
                 return

@@ -72,7 +72,15 @@ export default {
             this.$router.push('/usermanagement/mywj')
         },
         send() {
-            this.$router.push(`/wjmanagement/sentwj:${getIdfromUrl()}`)
+            if(this.wj.status === '2') {
+                this.$message({
+                    message: '此问卷已被禁用，无法发送',
+                    type: 'warning'
+                });
+                return
+            } else {
+                this.$router.push(`/wjmanagement/sentwj:${getIdfromUrl()}`)
+            }           
         },
         preview() {
             let routeData = this.$router.resolve({ path: `/wjpreview:${getIdfromUrl()}`})

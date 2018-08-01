@@ -93,6 +93,9 @@ export default {
                     }
                     this.wj = this.originWj
                     this.loading = false
+                } else if(!res.success) {
+                    this.$message.error(res.msg)
+                    this.loading = false
                 }
             })
         },

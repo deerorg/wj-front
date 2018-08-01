@@ -27,6 +27,11 @@ export function getId () {
   return bus.user.id ? bus.user.id : Cookies.get('id')
 }
 
+export function getRoleId () {
+  let user = JSON.parse(localStorage.getItem('userinfor'))
+  return user.roleIds //  it is an array
+}
+
 export function deleName () {
   bus.user.name = ''
   Cookies.remove('name')
