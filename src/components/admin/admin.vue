@@ -6,18 +6,19 @@
                         background-color="#545c64"
                         text-color="#fff"
                         active-text-color="#ffd04b"
-                        default-active='2'
+                        :default-active='this.$route.path'
+                        router 
                     >
-                        <el-menu-item index="1" @click="back">
+                        <el-menu-item index="/usermanagement/mywj" >
                             <i class="fa fa-home menu_icon"></i>我的管理中心
                         </el-menu-item>
-                        <el-menu-item index="2">
+                        <el-menu-item index="/admin/user" >
                             <i class="fa fa-user-circle-o menu_icon"></i>用户管理
                         </el-menu-item>
-                        <el-menu-item index="3">
+                        <el-menu-item index="/admin/role" >
                             <i class="el-icon-setting menu_icon"></i>角色管理
                         </el-menu-item>
-                        <el-menu-item index="4">
+                        <el-menu-item index="/admin/menu" >
                             <i class="el-icon-menu menu_icon"></i>菜单管理
                         </el-menu-item>
                     </el-menu>
@@ -54,9 +55,9 @@ export default {
     //     }  
     // },
     methods: {
-        back(){
-            this.$router.push('/usermanagement/mywj')
-        },
+        // back(){
+        //     this.$router.push('/usermanagement/mywj')
+        // },
     }
 
 }
