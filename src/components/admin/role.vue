@@ -68,7 +68,7 @@
             </div>
         </el-dialog>
         <!--分配菜单-->
-         <el-dialog title="角色功能菜单分配" :visible.sync="isShowTree" width="70%">
+         <el-dialog title="角色功能菜单分配" :visible.sync="isShowTree" width="40%">
             <el-form label-position="left"  label-width="200px"  :inline="true">
                 <el-form-item label="当前角色">
                     <el-input v-model="currentRole.roleName" readonly disabled></el-input>

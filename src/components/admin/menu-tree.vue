@@ -1,6 +1,9 @@
 <template>
-<div class="menu-tree">
-    <div class="info-tree">
+<div class="menu-tree clrfix">
+    <div class="menuhead clrfix"  v-show="control.showRight">
+        <el-button type="primary" @click="isShowAdd = true" size="medium" class="fr">添加菜单</el-button>
+    </div>
+    <div class="info-tree fl">
         <el-tree
             ref="eMenuTree"
             :data="treeData"
@@ -14,57 +17,63 @@
             :default-expand-all="true"
             :highlight-current="true"
             @check-change = "onCheckChange"	
-            @node-click="handleNodeClick"
-            class="e-info-tree__left">
+            @node-click="handleNodeClick">
         </el-tree>
-
-        <section class="e-info-tree__right" v-show="control.showRight">
-               <el-form ref="addForm" label-position="left"  label-width="200px"  :model="addForm" v-show="isShow">
-                   <el-form-item label="类型" prop="type" >
-                        <el-radio-group v-model="addForm.type">
-                            <el-radio :label="1">编辑菜单</el-radio>
-                            <el-radio :label="2">添加子菜单</el-radio>
-                        </el-radio-group>
-                   </el-form-item>
-                <el-form-item label="菜单名称" prop="name" v-show="addForm.type==1" >
-                    <el-input v-model="addForm.menuName"></el-input>
-                </el-form-item>
-                <el-form-item label="地址" prop="nameEn"  v-show="addForm.type==1" >
-                    <el-input v-model="addForm.menuPath"></el-input>
-                </el-form-item>
-                 <el-form-item label="子菜单名称" v-show="addForm.type==2">
-                    <el-input v-model="addForm.subMenuName"></el-input>
-                </el-form-item>
-                <el-form-item label="地址" v-show="addForm.type==2" >
-                    <el-input v-model="addForm.subMenuPath"></el-input>
-                </el-form-item>
-                <el-form-item label="备注">
-                    <el-input v-model="addForm.remarks"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="confirmAdd">保存</el-button>
-                    <el-button  @click="confirmDeleteMenu">删除菜单</el-button>
-                </el-form-item>
-            </el-form> 
-        </section>
     </div>
+    <section class="fl menueditform" v-show="control.showRight">
+        <el-form ref="addForm" label-position="left"  label-width="100px"  :model="addForm" v-show="isShow">
+            <el-form-item label="类型" prop="type" >
+                <el-radio-group v-model="addForm.type">
+                    <el-radio :label="1">编辑菜单</el-radio>
+                    <el-radio :label="2">添加子菜单</el-radio>
+                </el-radio-group>
+            </el-form-item>
+            <el-form-item label="菜单名称" prop="name" v-show="addForm.type==1" >
+                <el-input v-model="addForm.menuName"></el-input>
+            </el-form-item>
+            <el-form-item label="地址" prop="nameEn"  v-show="addForm.type==1" >
+                <el-input v-model="addForm.menuPath"></el-input>
+            </el-form-item>
+                <el-form-item label="子菜单名称" v-show="addForm.type==2">
+                <el-input v-model="addForm.subMenuName"></el-input>
+            </el-form-item>
+            <el-form-item label="地址" v-show="addForm.type==2" >
+                <el-input v-model="addForm.subMenuPath"></el-input>
+            </el-form-item>
+            <el-form-item label="备注">
+                <el-input v-model="addForm.remarks"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="confirmAdd">保存</el-button>
+                <el-button  @click="confirmDeleteMenu">删除菜单</el-button>
+            </el-form-item>
+        </el-form> 
+    </section>
+    <el-dialog title="添加菜单" :visible.sync="isShowAdd" width="50%">
+        <el-form ref="addPFrom" :model="addPFrom" label-position="left" label-width="100px">
+            <el-form-item label="菜单名称" prop="name">
+                <el-input v-model="addPFrom.menuName"></el-input>
+            </el-form-item>
+            <el-form-item label="地址" prop="menuPath">
+                <el-input v-model="addPFrom.menuPath"></el-input>
+            </el-form-item>
+            <el-form-item label="备注" prop="remarks">
+                <el-input v-model="addPFrom.remarks"></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="isShowAdd = false">取消</el-button>
+            <el-button type="primary"  @click="addPMenu">保存</el-button>
+        </div>
+    </el-dialog>
 </div>
-
 </template>
 
 
 <script>
-// import {
-//   getInfo,
-//   postItem
-// } from "@/api/advanced"
-
-import { getAllRoles, addRole, modifyRole, deletRole } from 'api/admin'
+import { getTree, getMenuByRole, allocateOrCancleMenuRole, delMenu, editMenu, addMenu } from 'api/admin'
 export default {
   name: "MenuTree",
-//   computed: {
-//     ...mapGetters(["userId", "tenantId", "tenantName"])
-//   },
   props: {
     control: {
         type: Object,
@@ -94,6 +103,8 @@ export default {
       isShow: false,
       // 是否可以发送请求 1s之内不能发送请求
       isSendCheckedRequest: false,
+      isShowAdd: false,
+      addPFrom: {},
       addForm: {
         type: 1,
         remarks: ''
@@ -107,85 +118,74 @@ export default {
   },
 
   mounted() {
-    const me = this
-    if (me.control.showCheckbox) {
-      getInfo('/menu/role-id-menu?roleId=' + me.roleId).then(response => {
-        const { success, data, msg } = response.data
-        if (success) {
-          me.defaultCheckedIds = data.map(x => x.id)
-        } else {
-          me.$message.error(msg)
-        }
-      })
+    if (this.control.showCheckbox) {
+        getMenuByRole(this.roleId).then(res => {
+            if(res.success) {
+                this.defaultCheckedIds = res.data.map(x => x.id)
+            } else {
+                this.$message.error(msg)
+            }
+        })
     }
 
-    me.getTree()
+    this._getTree()
   },
   methods: {
-    getTree() {
-      const me = this
-      getInfo('/menu/tree').then(response => {
-        const { success, data, msg } = response.data
-        if (success) {
-          if (typeof data === 'string') {
-            me.treeData = JSON.parse(data)
-            if (me.control.showCheckbox) {
-              me.isSendCheckedRequest = false
-              setTimeout(function() {
-                // debugger;
-                me.$refs.eMenuTree.setCheckedKeys(me.defaultCheckedIds)
-                me.isSendCheckedRequest = true
-              }, 1000)
+    _getTree() {
+        const me = this
+        getTree().then((res) => {
+            if(res.success) {
+                if (typeof res.data === 'string') {
+                    me.treeData = JSON.parse(res.data)
+                    if(me.control.showCheckbox) {
+                        me.isSendCheckedRequest = false
+                        me.$refs.eMenuTree.setCheckedKeys(me.defaultCheckedIds)
+                        setTimeout(function() {
+                            // debugger;
+                            me.isSendCheckedRequest = true
+                        }, 1000)
+                    }
+                }else {
+                  me.$message.error(msg)
+                }
             }
-
-            // me.$nextTick(function(){
-            //     me.$refs.eMenuTree.setCheckedKeys(me.defaultCheckedIds);
-            // })
-          }
-        } else {
-          me.$message.error(msg)
-        }
-      })
+        })
     },
     confirmDeleteMenu() {
-      const me = this
-      postItem('/menu/del?id=' + me.currentData.id, { id: me.currentData.id }).then(response => {
-        const { success, data, msg } = response.data
-        if (success) {
-          me.getTree()
-          me.$message.success("编辑菜单成功")
-        } else {
-          me.$message.error(msg)
-        }
-      })
+        const me = this
+        delMenu(me.currentData.id).then(res => {
+            if(res.success) {
+                me._getTree()
+                me.$message.success("菜单删除成功")
+            } else {
+                me.$message.error(res.msg)
+            }
+        })
     },
     onCheckChange(data, nodeselfCheck, subNodeCheck) {
       const me = this
       // console.log(data, nodeselfCheck, subNodeCheck);
       // 当前ID 选中或没有选中
-      const url = nodeselfCheck ? '/menu-role/allocate' : '/menu-role/cancel'
-
-      // // 屏蔽掉首次勾选的请求
-
-      if (!me.isSendCheckedRequest) {
-        return
-      }
-      const item = {
-        roleId: me.roleId,
-        menuIds: [data.id]
-      }
-      postItem(url, item).then(response => {
-        const { success, data, msg } = response.data
-        if (success) {
-          if (nodeselfCheck) {
-            me.$message.success("分配菜单成功")
-          } else {
-            me.$message.success("取消分配成功")
-          }
-        } else {
-          me.$message.error(msg)
+        const url = nodeselfCheck ? '/menu-role/allocate' : '/menu-role/cancel'
+        // 屏蔽掉首次勾选的请求
+        if (!me.isSendCheckedRequest) {
+            return
         }
-      })
+        const item = {
+            roleId: me.roleId,
+            menuIds: [data.id]
+        }
+        allocateOrCancleMenuRole(url, item).then(res => {
+            if (res.success) {
+                if (nodeselfCheck) {
+                    me.$message.success("分配菜单成功")
+                } else {
+                    me.$message.success("取消分配成功")
+                }
+            } else {
+            me.$message.error(res.msg)
+            }
+        })
     },
     confirmAdd() {
       const me = this
@@ -199,14 +199,13 @@ export default {
           id: me.addForm.id,
           pid: me.addForm.pid
         }
-        postItem('/menu/edit', editItem).then(response => {
-          const { success, data, msg } = response.data
-          if (success) {
-            me.getTree()
-            me.$message.success("编辑菜单成功")
-          } else {
-            me.$message.error(msg)
-          }
+        editMenu(editItem).then(res => {
+            if(res.success) {
+                me._getTree()
+                me.$message.success("编辑菜单成功")
+            } else {
+                me.$message.error(res.msg)
+            }
         })
       } else {
         const addItem = {
@@ -216,23 +215,39 @@ export default {
           type: 1,
           pid: me.addForm.id
         }
-        postItem('/menu/add', addItem).then(response => {
-          const { success, data, msg } = response.data
-          if (success) {
-            me.getTree()
-            me.$message.success("添加子菜单成功")
-          } else {
-            me.$message.error(msg)
-          }
+        addMenu(addItem).then(res => {
+            if(res.success) {
+                me._getTree()
+                me.$message.success("添加子菜单成功")
+            } else {
+                me.$message.error(res.msg)
+            }
         })
       }
       me.isShow = false
-      // todo
     },
-    /* 点击响应时间 */
+   addPMenu() {
+        const me = this
+        const addPItem = {
+            name: me.addPFrom.menuName,
+            url: me.addPFrom.menuPath,
+            remarks: me.addPFrom.remarks,
+            type: 1,
+            pid: 0
+        }
+        addMenu(addPItem).then(res => {
+            if(res.success) {
+                me._getTree()
+                me.$message.success("添加菜单成功")
+                me.isShowAdd = false
+            } else {
+                me.$message.error(res.msg)
+            }
+        })
+
+   },
     handleNodeClick(item, node, self) {
       const me = this
-      //
       me.currentData = item
       me.currentChooseNode = node
       me.currentSelf = self
@@ -245,7 +260,7 @@ export default {
         menuPath: item.url,
         subMenuName: '',
         subMenuPath: '',
-        remarks: '',
+        remarks: item.remarks,
         pid: item.pid
       }
 
@@ -258,4 +273,14 @@ export default {
 
 <style lang="scss" scoped>
 @import 'common/scss/common.scss';
+.info-tree{
+    width: 60%;
+}
+.menueditform{
+    margin: 0 30px;
+    width: 30%;
+}
+.menuhead{
+    margin-bottom: 10px;
+}
 </style>

@@ -19,11 +19,20 @@
                         <li class="childmenubutton" @click="feedbackDialog = true">意见反馈</li>
                         <el-menu-item index="2-2">帮助</el-menu-item>
                     </el-submenu>
-                    <el-menu-item index="3">
-                        <router-link to="/usermanagement/message">
-                            <i class="fa fa-bell menu-icon" style="font-size: 22px"></i><span>消息</span>
+    
+                    <el-menu-item :index="index+3+''" v-if="!item.children" v-for="(item, index) in menulist" :key="index">
+                        <router-link :to="item.url">
+                            <i :class="item.icon" style="font-size: 22px"></i><span>{{item.name}}</span>
                         </router-link>
                     </el-menu-item>
+                    <el-submenu :index="index+3+''" v-if="item.children" v-for="(item, index) in menulist" :key="index">
+                        <template slot="title" ><i :class="item.icon"></i><span>{{item.name}}</span></template>
+                        <el-menu-item v-for="(subitem, subindex) in item.children" :index="index+'-'+subindex" :key="index+'-'+subindex">
+                            <router-link :to="subitem.url">
+                               <span style="color: #fff">{{subitem.name}}</span>
+                            </router-link> 
+                        </el-menu-item>
+                    </el-submenu>
                     <li  @click="_logout" class="logout"><i class="fa fa-power-off menu-icon"></i><span>退出</span></li>
                 </el-menu>
             </div>
@@ -48,8 +57,10 @@
 </template>
 
 <script>
-import { getName, getToken, getId, deleUser} from 'store/store'
+import { getName, getToken, getId, deleUser, getUserInfor } from 'store/store'
+import { getMenuIcon } from '@/router/activeConfig'
 import { checkLoginState, logout } from 'api/login'
+import { getMenuByRoleArr } from 'api/admin'
 export default {
     beforeRouteEnter (to, from, next) {
         if(getToken()) {
@@ -70,6 +81,7 @@ export default {
             feedbackForm: {
                 feedback: ''
             },
+            menulist: [],
             rulesFeedback: {
                 feedback: [
                     { required: true, message: '请输入您的意见或遇到的问题', trigger: 'blur' },
@@ -78,9 +90,28 @@ export default {
         }
     },
     created() {
+        this.getMenu()
         this.username = getName()
     },
     methods:{
+        getMenu() {
+            getMenuByRoleArr(getUserInfor().roleIds).then(res => {
+                if(res.success) {
+                    let menuobj
+                    if (typeof res.data === 'string') {
+                        menuobj = JSON.parse(res.data)
+                    } else {
+                        menuobj = res.data
+                    }
+                    menuobj.forEach(ele => {
+                        ele.icon = getMenuIcon(ele.name)
+                    })
+                    this.menulist = menuobj
+                    // console.log(this.menulist)
+                    // console.log(this.$router)
+                }
+            })
+        },
         _logout(){
             this.$confirm('您即将退出, 是否继续?', '提示', {
                 confirmButtonText: '确定',

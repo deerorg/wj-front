@@ -89,3 +89,63 @@ export function deletRole (id) {
     return Promise.resolve(res.data)
   })
 }
+
+export function getTree () {
+  const url = '/menu/tree'
+  return service.get(url).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+export function getMenuByRole (id) {
+  const url = '/menu/role-id-menu'
+  const data = {
+    roleId: id
+  }
+  return service.get(url, {
+    params: data
+  }).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+export function getMenuByRoleArr (roleids) {
+  const queryIds = roleids.map((x, index) => {
+    if (index === 0) {
+      return '?roleIds=' + x
+    } else {
+      return '&roleIds=' + x
+    }
+  }).join('')
+  const url = `/menu/role-ids-tree${queryIds}`
+  return service.get(url).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+export function allocateOrCancleMenuRole (url, item) {
+  return service.post(url, item).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+export function delMenu (id) {
+  const url = `/menu/del?id=${id}`
+  return service.post(url).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+export function editMenu (menu) {
+  const url = '/menu/edit'
+  return service.post(url, menu).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+export function addMenu (menu) {
+  const url = '/menu/add'
+  return service.post(url, menu).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}

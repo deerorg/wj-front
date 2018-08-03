@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
+// import { getMenuRelation } from './activeConfig'
+import { getMenuByRoleArr } from 'api/admin'
+import { getUserInfor } from 'store/store'
 Vue.use(Router)
 
 const Index = (resolve) => {
@@ -24,17 +26,17 @@ const UserManagement = (resolve) => {
   })
 }
 const MyWj = (resolve) => {
-  import('components/mywj/mywj').then((module) => {
+  import('components/usermanagement/mywj').then((module) => {
     resolve(module)
   })
 }
 const User = (resolve) => {
-  import('components/user/user').then((module) => {
+  import('components/usermanagement/user').then((module) => {
     resolve(module)
   })
 }
 const Message = (resolve) => {
-  import('components/message/message').then((module) => {
+  import('components/usermanagement/message').then((module) => {
     resolve(module)
   })
 }
@@ -85,22 +87,22 @@ const Admin = (resolve) => {
   })
 }
 const UserAdmin = (resolve) => {
-  import('components/admin/user-admin').then((module) => {
+  import('components/admin/user').then((module) => {
     resolve(module)
   })
 }
 const RoleAdmin = (resolve) => {
-  import('components/admin/role-admin').then((module) => {
+  import('components/admin/role').then((module) => {
     resolve(module)
   })
 }
 const MenuAdmin = (resolve) => {
-  import('components/admin/menu-admin').then((module) => {
+  import('components/admin/menu').then((module) => {
     resolve(module)
   })
 }
 
-export default new Router({
+const router = new Router({
   routes: [
     {
       path: '/',
@@ -126,41 +128,41 @@ export default new Router({
       },
       component: Register
     },
-    {
-      path: '/admin',
-      name: '/admin/user',
-      redirect: '',
-      meta: {
-        title: '权限管理_问卷管家'
-      },
-      component: Admin,
-      children: [
-        {
-          path: 'user',
-          name: 'user',
-          meta: {
-            title: '用户管理_问卷管家'
-          },
-          component: UserAdmin
-        },
-        {
-          path: 'role',
-          name: 'role',
-          meta: {
-            title: '角色管理_问卷管家'
-          },
-          component: RoleAdmin
-        },
-        {
-          path: 'menu',
-          name: 'menu',
-          meta: {
-            title: '菜单管理_问卷管家'
-          },
-          component: MenuAdmin
-        }
-      ]
-    },
+    // {
+    //   path: '/admin',
+    //   name: '/admin/user',
+    //   redirect: '',
+    //   meta: {
+    //     title: '权限管理_问卷管家'
+    //   },
+    //   component: Admin,
+    //   children: [
+    //     {
+    //       path: 'user',
+    //       name: 'user',
+    //       meta: {
+    //         title: '用户管理_问卷管家'
+    //       },
+    //       component: UserAdmin
+    //     },
+    //     {
+    //       path: 'role',
+    //       name: 'role',
+    //       meta: {
+    //         title: '角色管理_问卷管家'
+    //       },
+    //       component: RoleAdmin
+    //     },
+    //     {
+    //       path: 'menu',
+    //       name: 'menu',
+    //       meta: {
+    //         title: '菜单管理_问卷管家'
+    //       },
+    //       component: MenuAdmin
+    //     }
+    //   ]
+    // },
     {
       path: '/usermanagement',
       redirect: '/usermanagement/mywj',
@@ -184,15 +186,15 @@ export default new Router({
             title: '个人中心_问卷管家'
           },
           component: User
-        },
-        {
-          path: 'message',
-          name: 'message',
-          meta: {
-            title: '消息_问卷管家'
-          },
-          component: Message
         }
+        // {
+        //   path: 'message',
+        //   name: 'message',
+        //   meta: {
+        //     title: '消息_问卷管家'
+        //   },
+        //   component: Message
+        // }
       ],
       component: UserManagement
     },
@@ -265,3 +267,94 @@ export default new Router({
     }
   ]
 })
+
+const dynamicRoutes = [
+  {
+    path: '/usermanagement/message',
+    name: 'message',
+    meta: {
+      title: '消息_问卷管家'
+    },
+    component: Message
+  },
+  {
+    path: '/admin',
+    name: '/admin/user',
+    redirect: '',
+    meta: {
+      title: '权限管理_问卷管家'
+    },
+    component: Admin,
+    children: [
+      {
+        path: '/admin/user',
+        name: 'user',
+        meta: {
+          title: '用户管理_问卷管家'
+        },
+        component: UserAdmin
+      },
+      {
+        path: '/admin/role',
+        name: 'role',
+        meta: {
+          title: '角色管理_问卷管家'
+        },
+        component: RoleAdmin
+      },
+      {
+        path: '/admin/menu',
+        name: 'menu',
+        meta: {
+          title: '菜单管理_问卷管家'
+        },
+        component: MenuAdmin
+      }
+    ]
+  }
+]
+
+let flag = false
+router.beforeEach((to, from, next) => {
+  let menulist = []
+  if (!flag) {
+    let newRouters = []
+    getMenuByRoleArr(getUserInfor().roleIds).then(res => {
+      if (res.success) {
+        if (typeof res.data === 'string') {
+          menulist = JSON.parse(res.data)
+        } else {
+          menulist = res.data
+        }
+        newRouters = menulist.map((x, index) => {
+          if (x.url === dynamicRoutes[index].path) {
+            if (x.children && x.children.length === dynamicRoutes[index].children.length) {
+              return dynamicRoutes[index]
+            } else if (x.children && x.children.length !== dynamicRoutes[index].children.length) {
+              dynamicRoutes[index].children = dynamicRoutes[index].children.fliter(e => {
+                if (e.path === x.children.url) {
+                  return e
+                }
+              })
+              return dynamicRoutes[index]
+            } else {
+              return dynamicRoutes[index]
+            }
+          }
+
+          // router.options.routes[x.in].children.push(dynamicRoutes[index])
+        })
+        console.log(newRouters)
+        router.addRoutes(newRouters)
+        // console.log('添加完后的router')
+        console.log(router)
+        flag = true
+        next()
+      }
+    })
+  } else {
+    next()
+  }
+})
+
+export default router

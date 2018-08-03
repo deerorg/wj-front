@@ -12,7 +12,7 @@
                         <el-menu-item index="/usermanagement/mywj" >
                             <i class="fa fa-home menu_icon"></i>我的管理中心
                         </el-menu-item>
-                        <el-menu-item index="/admin/user" >
+                        <!-- <el-menu-item index="/admin/user" >
                             <i class="fa fa-user-circle-o menu_icon"></i>用户管理
                         </el-menu-item>
                         <el-menu-item index="/admin/role" >
@@ -20,7 +20,16 @@
                         </el-menu-item>
                         <el-menu-item index="/admin/menu" >
                             <i class="el-icon-menu menu_icon"></i>菜单管理
+                        </el-menu-item> -->
+                        <el-menu-item :index="item.url" v-if="!item.children" v-for="(item, index) in menulist" :key="index">
+                                <i :class="item.icon" style="font-size: 22px"></i>{{item.name}}
                         </el-menu-item>
+                        <el-submenu :index="item.url" v-if="item.children" v-for="(item, index) in menulist" :key="index">
+                            <template slot="title" ><i :class="item.icon"></i><span>{{item.name}}</span></template>
+                            <el-menu-item v-for="(subitem, subindex) in item.children" :index="subitem.url" :key="index+'-'+subindex">
+                                {{subitem.name}}
+                            </el-menu-item>
+                        </el-submenu>
                     </el-menu>
                </el-aside>
                 <el-main>
@@ -31,12 +40,14 @@
 </template>
 
 <script>
-import { getId, getToken, getRoleId } from 'store/store'
+import { getId, getToken, getRoleId, getUserInfor } from 'store/store'
 import { checkLoginState } from 'api/login'
+import { getMenuByRoleArr } from 'api/admin'
+import { getMenuIcon } from '@/router/activeConfig'
 export default {
     data() {
         return {
-
+            menulist: [],
         }
     },
     // beforeRouteEnter (to, from, next) {
@@ -54,10 +65,31 @@ export default {
     //        next('/login')
     //     }  
     // },
+    created() {
+        this.getMenu()
+    },
     methods: {
-        // back(){
-        //     this.$router.push('/usermanagement/mywj')
-        // },
+        getMenu() {
+            getMenuByRoleArr(getUserInfor().roleIds).then(res => {
+                if(res.success) {
+                    let menuobj
+                    if (typeof res.data === 'string') {
+                        menuobj = JSON.parse(res.data)
+                    } else {
+                        menuobj = res.data
+                    }
+                    menuobj.forEach(ele => {
+                        ele.icon = getMenuIcon(ele.name)
+                    })
+                    menuobj = menuobj.filter(x => {
+                        if(x.url === '/admin') return x
+                    })
+                    this.menulist = menuobj
+                    // console.log(this.menulist)
+                    // console.log(this.$router)
+                }
+            })
+        },
     }
 
 }
