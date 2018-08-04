@@ -136,6 +136,17 @@ import { checkLoginState } from 'api/login'
 import { getAllUsers, addUser, modifyUser, updataPsd, getAllRoles, getRoles, setRoles } from 'api/admin'
 import { REG } from 'common/js/validat'
 export default {
+    beforeRouteEnter (to, from, next) {
+        if(getToken()) {
+            checkLoginState().then((res) => {
+                if(res.data.data === null && res.data.success) {
+                   next()
+                } else { next('/login') }
+            })
+        } else {
+           next('/login')
+        }  
+    },
     mounted() {
         this._getAllUsers()
         this._getRoles()

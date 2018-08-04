@@ -341,13 +341,17 @@ router.beforeEach((to, from, next) => {
               return dynamicRoutes[index]
             }
           }
-
           // router.options.routes[x.in].children.push(dynamicRoutes[index])
         })
-        console.log(newRouters)
-        router.addRoutes(newRouters)
+        newRouters = newRouters.filter(x => {
+          return x
+        })
+        if (newRouters.length !== 0) {
+          router.addRoutes(newRouters)
+        }
+        // console.log(newRouters)
         // console.log('添加完后的router')
-        console.log(router)
+        // console.log(router)
         flag = true
         next()
       }
