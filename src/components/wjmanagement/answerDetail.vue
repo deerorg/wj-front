@@ -15,7 +15,7 @@
                             </div>
                             <div class="option">
                                 <el-radio-group v-model="answer[index].opindex">
-                                    <el-radio :label="index"  class="option" :class="[que.viewControl=='0' ? 'crosswise' : 'vertical']"  v-for="(op,index) in que.optionList" :key="index">
+                                    <el-radio :label="op.id"  class="option" :class="[que.viewControl=='0' ? 'crosswise' : 'vertical']"  v-for="(op,index) in que.optionList" :key="index">
                                         <span  v-if="op.optionType=='1'">
                                             {{op.content}}
                                         </span>

@@ -93,6 +93,7 @@
 import { REG } from 'common/js/validat'
 import { updataPsd, updataInfor } from 'api/user'
 import { getId, deleUser, getUserInfor, getName } from 'store/store'
+import md5 from 'md5'
 export default {
     data(){
         let validatePsd = (rule, value, callback) => {
@@ -194,7 +195,11 @@ export default {
        changePsd (){
             this.$refs.psdForm.validate((valid) => {
                 if (valid) {
-                    updataPsd(this.psdForm.oldPwd, this.psdForm.newPwd, getId()).then((res) => {
+                    let obj = {}
+                    for(let i in this.psdForm) {
+                        obj[i] = this.psdForm[i]
+                    }
+                    updataPsd(md5(obj.oldPwd), md5(obj.newPwd), getId()).then((res) => {
                         if(res.data === null && res.success) {
                             this.dialogFormchangPsd = false
                             this.$message({

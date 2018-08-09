@@ -95,22 +95,22 @@ export default {
     },
     methods:{
         getMenu() {
-            getMenuByRoleArr(getUserInfor().roleIds).then(res => {
-                if(res.success) {
-                    let menuobj
-                    if (typeof res.data === 'string') {
-                        menuobj = JSON.parse(res.data)
-                    } else {
-                        menuobj = res.data
+            if(getUserInfor().roleIds) {
+                getMenuByRoleArr(getUserInfor().roleIds).then(res => {
+                    if(res.success) {
+                        let menuobj
+                        if (typeof res.data === 'string') {
+                            menuobj = JSON.parse(res.data)
+                        } else {
+                            menuobj = res.data
+                        }
+                        menuobj.forEach(ele => {
+                            ele.icon = getMenuIcon(ele.name)
+                        })
+                        this.menulist = menuobj
                     }
-                    menuobj.forEach(ele => {
-                        ele.icon = getMenuIcon(ele.name)
-                    })
-                    this.menulist = menuobj
-                    // console.log(this.menulist)
-                    // console.log(this.$router)
-                }
-            })
+                })
+            }
         },
         _logout(){
             this.$confirm('您即将退出, 是否继续?', '提示', {

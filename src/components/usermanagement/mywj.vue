@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import { getWjList, addWj, deletWj, UpdateWj } from 'api/wj'
+import { getWjList, addWj, deletWj, UpdateWj, UpdateWjStatus} from 'api/wj'
 import { fliter } from 'common/js/validat'
 import { getId } from 'store/store'
 const PAGESIZE = 10
@@ -176,20 +176,16 @@ export default {
         },
         forbid(item, index){
             let wjinfor = {
-                description: item.description,
                 id: item.id,
-                paperName: item.paperName,
-                paperType: '1',
-                remark: '',
                 status: '2',
-                updateUser: getId() 
+                createUser: getId() 
             }
             this.$confirm('是否禁用该问卷?禁用后该问卷无法重新启用但仍可查看。', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                UpdateWj(wjinfor).then((res) => {
+                UpdateWjStatus(wjinfor).then((res) => {
                     if(res.success){
                     this.list[index].status = '2'
                         this.$message({
@@ -207,21 +203,17 @@ export default {
         },
         operate(item, index) {
             let wjinfor = {
-                description: item.description,
                 id: item.id,
-                paperName: item.paperName,
-                paperType: '1',
-                remark: '',
                 status: '1',
-                updateUser: getId() 
+                createUser: getId() 
             }
-            if(item.status == '0') {
+            if(item.status === '0') {
                 this.$confirm('确定开始运行该问卷？问卷开启运行后将不能修改', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
                 }).then(() => {
-                    UpdateWj(wjinfor).then((res) => {
+                    UpdateWjStatus(wjinfor).then((res) => {
                         if(res.success){
                         this.list[index].status = '1'
                             this.$message({
@@ -236,8 +228,8 @@ export default {
                 }).catch(() => {
                     return
                 })
-            } else if(item.status == '2') {
-                UpdateWj(wjinfor).then((res) => {
+            } else if(item.status === '4') {
+                UpdateWjStatus(wjinfor).then((res) => {
                     if(res.success){
                     this.list[index].status = '1'
                         this.$message({
@@ -255,17 +247,18 @@ export default {
         },
         stop(item, index) {
             let wjinfor = {
-                description: item.description,
                 id: item.id,
-                paperName: item.paperName,
-                paperType: '1',
-                remark: '',
-                status: '2',
-                updateUser: getId() 
+                status: '4',
+                createUser: getId() 
             }
-            UpdateWj(wjinfor).then((res) => {
+            UpdateWjStatus(wjinfor).then((res) => {
                 if(res.success){
-                    this.list[index].status = '2'
+                    this.list[index].status = '4'
+                     this.$message({
+                        message: '问卷停止运行',
+                        type: 'success',
+                        duration: 1 * 1000
+                    })
                 } else {
                     this.$message.error(res.msg)
                 }

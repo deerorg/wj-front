@@ -1,22 +1,19 @@
 <template>
     <div class="wjmanagement">
-        <!-- 问卷管理：对于已发布（正在运行）的试卷进行管理
-        管理项(子路由)： 返回管理中心，发送问卷(对于开启运行的问卷)（链接，二维码发送），分析（对于有回收到问卷的试卷才可跳转）:答卷列表，单个答卷情况（更多分析等待后台开发）
-                编辑问卷（只能编辑没有发布的） -->
         <el-container class="container">
             <el-aside width="200px" style="height: 100%; background-color: rgb(84, 92, 100);">
                  <el-menu :default-openeds="['4']"    
                     background-color="#545c64"
                     text-color="#fff"
                     active-text-color="#ffd04b"
-                    default-active='3'>
-                    <el-menu-item index="1" @click="back">
+                    :default-active='this.$route.path'>
+                    <el-menu-item index="/usermanagement/mywj" @click="back">
                         <i class="fa fa-home menu_icon"></i>我的管理中心
                     </el-menu-item>
-                    <el-menu-item index="2" @click="edit">
+                    <el-menu-item :index="'/edit:'+id" @click="edit">
                         <i class="el-icon-edit menu_icon"></i>编辑问卷
                     </el-menu-item>
-                    <el-menu-item index="3" @click="send">
+                    <el-menu-item :index="'/wjmanagement/sentwj:'+id" @click="send">
                         <i class="el-icon-message menu_icon"></i>发送问卷
                     </el-menu-item>
                      <li  @click="preview" class="menu_item">
@@ -25,8 +22,8 @@
                     <el-submenu index="4">
                         <template slot="title"><i class="el-icon-setting"></i>答卷分析</template>
                         <el-menu-item-group>
-                        <el-menu-item index="4-1" @click="answerwj">答卷</el-menu-item>
-                        <el-menu-item index="4-2" @click="analyzewj">数据分析</el-menu-item>
+                        <el-menu-item :index="'/wjmanagement/wjanswer'+id" @click="answerwj">答卷</el-menu-item>
+                        <el-menu-item :index="'/wjmanagement/analyzewj'+ id" @click="analyzewj">数据分析</el-menu-item>
                         </el-menu-item-group>
                     </el-submenu>
                 </el-menu>
@@ -61,7 +58,8 @@ export default {
     },
     data() {
         return{
-            wj:{}
+            wj:{},
+            id: getIdfromUrl()
         }
     },
     created() {

@@ -89,11 +89,15 @@ export default {
             this.$refs.loginForm.validate((valid) => {
             if (valid) {
                 this.logining = true
-                Login(this.loginForm).then((res) => {
+                let obj = {}
+               for(let i in this.loginForm) {
+                   obj[i] = this.loginForm[i]
+               }
+                Login(obj).then((res) => {
                     this.logining = false
                     const { success, msg, data } = res
                     if (success) {
-                        if (data.user.roleIds.length <= 0) {
+                        if (data.user.roleIds && data.user.roleIds.length <= 0) {
                             me.$message.info("用户无权登录系统, 请联系管理员")
                         }
                         else{

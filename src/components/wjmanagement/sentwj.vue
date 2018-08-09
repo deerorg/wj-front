@@ -29,7 +29,7 @@
 <script>
 const IMAGEPATH = '../../common/img/logo.png'
 import VueQr from 'vue-qr'
-import { getWjInfor, UpdateWj} from 'api/wj'
+import { getWjInfor, UpdateWj, UpdateWjStatus} from 'api/wj'
 import { getId, getToken, getIdfromUrl } from 'store/store'
 import { checkLoginState } from 'api/login'
 import bus from 'store/bus'
@@ -96,13 +96,9 @@ export default {
         },
         publish(){
             let wjinfor = {
-                description: this.wj.description,
                 id: this.wj.id,
-                paperName: this.wj.paperName,
-                paperType: '1',
-                remark: '',
                 status: '1',
-                updateUser: getId() 
+                createUser: getId() 
             }
             if(this.wj.status == '0') {
                 this.$confirm('确定开始运行该问卷？问卷开启运行后将不能修改', '提示', {
@@ -110,14 +106,15 @@ export default {
                 cancelButtonText: '取消',
                 type: 'warning'
                 }).then(() => {
-                    UpdateWj(wjinfor).then((res) => {
+                    UpdateWjStatus(wjinfor).then((res) => {
                         if(res.success){
-                        this.wj.status = '1'
                         this.$message({
                                 message: '问卷开启运行成功',
                                 type: 'success',
                                 duration: 1 * 1000
                         })
+                        window.location.reload(true)
+                        this.wj.status = '1'
                         } else {
                             this.$message.error(res.msg)
                         }
@@ -126,7 +123,7 @@ export default {
                     return
                 })
             } else if(this.wj.status == '4') {
-                UpdateWj(wjinfor).then((res) => {
+                UpdateWjStatus(wjinfor).then((res) => {
                     if(res.success){
                     this.wj.status = '1'
                         this.$message({

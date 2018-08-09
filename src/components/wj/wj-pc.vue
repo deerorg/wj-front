@@ -16,7 +16,7 @@
                             </div>
                             <div class="option">
                                 <el-radio-group v-model="answer[index].opindex">
-                                    <el-radio :label="index"  class="option" :class="[que.viewControl=='0' ? 'crosswise' : 'vertical']"  v-for="(op,index) in que.optionList" :key="index">
+                                    <el-radio :label="op.id"  class="option" :class="[que.viewControl=='0' ? 'crosswise' : 'vertical']"  v-for="(op,index) in que.optionList" :key="index">
                                         <span  v-if="op.optionType=='1'">
                                             {{op.content}}
                                         </span>
@@ -142,17 +142,35 @@ export default {
                     let am = {}
                     let key = this.answer[i].opindex
                    // console.log(this.wj.testList[this.answer[i].testIndex])
-                    let val = this.wj.testList[this.answer[i].testIndex].optionList[key].optionType === '1' ? this.wj.testList[this.answer[i].testIndex].optionList[key].content : this.wj.testList[this.answer[i].testIndex].optionList[key].img
-                    console.log(key)
-                    console.log(val)
-                    am[key] = val
-                    answerinfor.tAnswerVos.push({
-                        answerMap: am,
-                        paperId: getIdfromUrl(),
-                        required: this.answer[i].required,
-                        testId: this.answer[i].testId,
-                        userId: getId()
-                    })
+                   // let val = this.wj.testList[this.answer[i].testIndex].optionList[key].optionType === '1' ? this.wj.testList[this.answer[i].testIndex].optionList[key].content : this.wj.testList[this.answer[i].testIndex].optionList[key].img
+                    if(key) {
+                         let val = this.wj.testList[this.answer[i].testIndex].optionList.filter(x => {
+                            if(x.id === key && x.optionType === '1') {
+                                return x
+                            } else if(x.id === key && x.optionType === '2') {
+                                return x
+                            }
+                        })[0]
+                        val = (val.optionType === '1') ? val.content : val.img
+                        console.log(key)
+                        console.log(val)
+                        am[key] = val
+                        answerinfor.tAnswerVos.push({
+                            answerMap: am,
+                            paperId: getIdfromUrl(),
+                            required: this.answer[i].required,
+                            testId: this.answer[i].testId,
+                            userId: getId()
+                        })
+                    } else {
+                         answerinfor.tAnswerVos.push({
+                            answerMap: {},
+                            paperId: getIdfromUrl(),
+                            required: this.answer[i].required,
+                            testId: this.answer[i].testId,
+                            userId: getId()
+                        })
+                    }
                 }
                // console.log(answerinfor)
                 this.loadingtext = '正在提交......'

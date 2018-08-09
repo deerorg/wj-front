@@ -1,4 +1,5 @@
 import service from './axios'
+import md5 from 'md5'
 
 export function getKaptchaImage (phone) {
   const url = '/image/getKaptchaImage'
@@ -33,6 +34,7 @@ export function check (checkname, val) {
 
 export function register (userinfor) {
   const url = '/sys/register/add'
+  userinfor.password = md5(userinfor.password)
   return service.post(url, userinfor).then((res) => {
     return Promise.resolve(res.data)
   })

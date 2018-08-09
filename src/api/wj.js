@@ -44,6 +44,13 @@ export function UpdateWj (wjinfor) {
   })
 }
 
+export function UpdateWjStatus (wjinfor) {
+  const url = '/paper/update/status'
+  return service.put(url, querystring.stringify(wjinfor)).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
 export function getWjInfor (id, userid) {
   const url = '/paper/queryPaperInfo'
   const data = {
@@ -201,6 +208,19 @@ export function getAnswerDtail (id) {
   const url = '/userpaper/query/userpaper'
   const data = {
     userPaperId: id
+  }
+  return service.get(url, {
+    params: data
+  }).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+export function getAnswerReport (pid, uid) {
+  const url = '/rp/list'
+  const data = {
+    paperId: pid,
+    createUser: uid
   }
   return service.get(url, {
     params: data

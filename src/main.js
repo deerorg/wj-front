@@ -5,7 +5,7 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import bus from './store/bus'
-import { Form, FormItem, Input, Checkbox, Button, Message, MessageBox, Submenu, Menu, MenuItem, MenuItemGroup, Dialog, Container, Aside, Main, Pagination, Header, Radio, RadioGroup, Upload, Alert, Loading, Table, TableColumn, CheckboxGroup, Tree } from 'element-ui'
+import { Form, FormItem, Input, Checkbox, Button, Message, MessageBox, Submenu, Menu, MenuItem, MenuItemGroup, Dialog, Container, Aside, Main, Pagination, Header, Radio, RadioGroup, Upload, Alert, Loading, Table, TableColumn, CheckboxGroup, Tree, Progress } from 'element-ui'
 import 'normalize.css'
 import 'common/scss/base.scss'
 import 'common/scss/element-ui.scss'
@@ -37,7 +37,7 @@ Vue.use(Table)
 Vue.use(TableColumn)
 Vue.use(CheckboxGroup)
 Vue.use(Tree)
-
+Vue.use(Progress)
 // VueClipboard.config.autoSetContainer = true // add this line
 Vue.config.productionTip = false
 Vue.prototype.$message = Message

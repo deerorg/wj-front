@@ -319,43 +319,47 @@ router.beforeEach((to, from, next) => {
   let menulist = []
   if (!flag) {
     let newRouters = []
-    getMenuByRoleArr(getUserInfor().roleIds).then(res => {
-      if (res.success) {
-        if (typeof res.data === 'string') {
-          menulist = JSON.parse(res.data)
-        } else {
-          menulist = res.data
-        }
-        newRouters = menulist.map((x, index) => {
-          if (x.url === dynamicRoutes[index].path) {
-            if (x.children && x.children.length === dynamicRoutes[index].children.length) {
-              return dynamicRoutes[index]
-            } else if (x.children && x.children.length !== dynamicRoutes[index].children.length) {
-              dynamicRoutes[index].children = dynamicRoutes[index].children.fliter(e => {
-                if (e.path === x.children.url) {
-                  return e
-                }
-              })
-              return dynamicRoutes[index]
-            } else {
-              return dynamicRoutes[index]
-            }
+    if (getUserInfor() && getUserInfor().roleIds) {
+      getMenuByRoleArr(getUserInfor().roleIds).then(res => {
+        if (res.success) {
+          if (typeof res.data === 'string') {
+            menulist = JSON.parse(res.data)
+          } else {
+            menulist = res.data
           }
-          // router.options.routes[x.in].children.push(dynamicRoutes[index])
-        })
-        newRouters = newRouters.filter(x => {
-          return x
-        })
-        if (newRouters.length !== 0) {
-          router.addRoutes(newRouters)
+          newRouters = menulist.map((x, index) => {
+            if (x.url === dynamicRoutes[index].path) {
+              if (x.children && x.children.length === dynamicRoutes[index].children.length) {
+                return dynamicRoutes[index]
+              } else if (x.children && x.children.length !== dynamicRoutes[index].children.length) {
+                dynamicRoutes[index].children = dynamicRoutes[index].children.fliter(e => {
+                  if (e.path === x.children.url) {
+                    return e
+                  }
+                })
+                return dynamicRoutes[index]
+              } else {
+                return dynamicRoutes[index]
+              }
+            }
+            // router.options.routes[x.in].children.push(dynamicRoutes[index])
+          })
+          newRouters = newRouters.filter(x => {
+            return x
+          })
+          if (newRouters.length !== 0) {
+            router.addRoutes(newRouters)
+          }
+          // console.log(newRouters)
+          // console.log('添加完后的router')
+          // console.log(router)
+          flag = true
+          next()
         }
-        // console.log(newRouters)
-        // console.log('添加完后的router')
-        // console.log(router)
-        flag = true
-        next()
-      }
-    })
+      })
+    } else {
+      next()
+    }
   } else {
     next()
   }

@@ -46,12 +46,12 @@ import { checkLoginState } from 'api/login'
 import { getToken } from 'store/store'
 export default {
     created() {
-        if (getToken()) {
-          checkLoginState().then((res) => {
-            if(res.data.data === null && res.data.success) {
-                this.isLogin = true
-            } 
-          })
+        if(getToken()) {
+            checkLoginState().then((res) => {
+                if(res.data.data === null && res.data.success) {
+                    this.isLogin = true
+                }
+            })
         }
     },
     data () {
