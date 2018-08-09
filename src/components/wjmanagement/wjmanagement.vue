@@ -6,7 +6,7 @@
                     background-color="#545c64"
                     text-color="#fff"
                     active-text-color="#ffd04b"
-                    :default-active='this.$route.path'>
+                    :default-active='this.$router.path'>
                     <el-menu-item index="/usermanagement/mywj" @click="back">
                         <i class="fa fa-home menu_icon"></i>我的管理中心
                     </el-menu-item>
