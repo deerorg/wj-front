@@ -152,8 +152,8 @@ export default {
                             }
                         })[0]
                         val = (val.optionType === '1') ? val.content : val.img
-                        console.log(key)
-                        console.log(val)
+                        // console.log(key)
+                        // console.log(val)
                         am[key] = val
                         answerinfor.tAnswerVos.push({
                             answerMap: am,
@@ -204,7 +204,7 @@ export default {
             let screenH = document.documentElement.clientHeight || document.body.clientHeight
             let headH = document.getElementsByClassName("header")[0].offsetHeight
             let h = screenH - headH - 2;
-            console.log(h)
+            // console.log(h)
             document.getElementsByClassName("anwser-area")[0].style.minHeight = h + 'px' 
         },
         magnifyImg(data){
@@ -229,7 +229,7 @@ export default {
             function iterateIP (ip) {
                 if (!localIPs[ip]) {
                     that.answerIp = ip
-                    console.log(that.answerIp)
+                    // console.log(that.answerIp)
                 }
                 localIPs[ip] = true
             }

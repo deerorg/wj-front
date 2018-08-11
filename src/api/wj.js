@@ -143,7 +143,7 @@ export function imgUpload (id, imgbase64) {
   })
 }
 
-export function imgDownload (id, imgurl) {
+export function imgDownload (id, imgurl) { // 根据图片名称返回base64字符串的请求，但是这样手动请求图片太卡了，性能体验差
   const url = '/img/download'
   const data = {
     createUser: id,

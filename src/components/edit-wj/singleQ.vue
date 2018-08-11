@@ -104,7 +104,7 @@ export default {
     },
     watch:{
         status(newstatus) {
-            console.log(newstatus)
+           // console.log(newstatus)
             if(newstatus === 1) {
                 this.preAddsingle()
                 this.currentStatus = 1
@@ -144,13 +144,13 @@ export default {
             this.singleque.viewControl = this.modifyque.viewControl
             this.singleque.optionList = this.modifyque.optionList
             this.singleque.optionList = this.modifyque.optionList
-            console.log('修改：')
-            console.log(this.singleque)
+            // console.log('修改：')
+            // console.log(this.singleque)
             this.dialogWjSingleQue = true
             this.$bus.singleq = 0
         },
         handleImg(e, index){
-            console.log(e.target.files)
+           // console.log(e.target.files)
             let that = this
             let img = e.target.files[0]
             let isLt2M = img.size / 1024 / 1024 < 2
@@ -160,7 +160,7 @@ export default {
             } else {
                 let reader = new FileReader()
                 reader.onload = function (file) {  
-                    imgUpload(getId(), reader.result).then((res) => {
+                    imgUpload(getId(), reader.result).then((res) => { // 将用户上传的图片上传到服务器后现在返回的是图片名称但是返回url更好。
                         if(res.success) {
                             that.singleque.optionList[index].img = res.data
                             // that.singleque.optionList[index].imgurl = 
@@ -171,8 +171,8 @@ export default {
                             } else { 
                                 fileinput.value = ""
                             }
-                            console.log('加入图片后')
-                            console.log(that.singleque.optionList[index])
+                           // console.log('加入图片后')
+                          //  console.log(that.singleque.optionList[index])
                         }
                     })
                 }
@@ -191,8 +191,8 @@ export default {
         removeImg(index) {
             this.singleque.optionList[index].img = ''
             // this.singleque.optionList[index].imgurl = ''
-            console.log('删除图片后：')
-            console.log(this.singleque.optionList[index].img)
+            // console.log('删除图片后：')
+            // console.log(this.singleque.optionList[index].img)
         },
         deletOption(index){
             this.singleque.optionList.splice(index, 1)
@@ -215,8 +215,8 @@ export default {
         },
         _addQuewithOptions (){
             this.$refs.singlequeForm.validate((valid) => {
-                console.log('即将添加的试题：')
-                console.log(this.singleque)
+                // console.log('即将添加的试题：')
+                // console.log(this.singleque)
                 if (valid) {
                     let req = this.singleque.required ? '1': '0'
                     const queinfor = {
@@ -252,8 +252,8 @@ export default {
                                   this.singleque.optionList.splice(i,1)   
                                 }
                             }
-                            console.log('添加成功即将添加到父组件：')
-                            console.log(this.singleque)
+                            // console.log('添加成功即将添加到父组件：')
+                            // console.log(this.singleque)
                             let tempqueinfor  = JSON.parse(JSON.stringify(this.singleque)) 
                             tempqueinfor.testType = '1'
                             this.$emit('pushSingle', tempqueinfor)
@@ -309,8 +309,8 @@ export default {
                                   this.singleque.optionList.splice(i,1)   
                                 } 
                             }
-                            console.log('即将将修改映射至试题：')
-                            console.log(this.singleque)
+                            // console.log('即将将修改映射至试题：')
+                            // console.log(this.singleque)
                             let tempqueinfor  = JSON.parse(JSON.stringify(this.singleque)) 
                             tempqueinfor.testType = '1'
                             this.$emit('modifySingle', tempqueinfor)

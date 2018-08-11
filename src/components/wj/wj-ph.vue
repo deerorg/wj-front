@@ -154,8 +154,8 @@ export default {
                         }
                         })[0]
                         val = (val.optionType === '1') ? val.content : val.img
-                        console.log(key)
-                        console.log(val)
+                        // console.log(key)
+                        // console.log(val)
                         am[key] = val
                         answerinfor.tAnswerVos.push({
                             answerMap: am,
@@ -202,12 +202,7 @@ export default {
             }
             return true
         },
-        clientHeight(){
-        //     let screenH = document.documentElement.clientHeight || document.body.clientHeight
-        //    // let headH = document.getElementsByClassName("header")[0].offsetHeight
-        //     let h = screenH - 2;
-        //     console.log(h)
-        //     document.getElementsByClassName("anwser-area")[0].style.minHeight = h + 'px' 
+        clientHeight(){ // 针对移动端的最小宽度设置，覆盖pc端的最小宽度
             document.getElementsByTagName("body")[0].style.minWidth = '100px'
         },
         magnifyImg(data){
@@ -232,7 +227,7 @@ export default {
             function iterateIP (ip) {
                 if (!localIPs[ip]) {
                     that.answerIp = ip
-                    console.log(that.answerIp)
+                  //  console.log(that.answerIp)
                 }
                 localIPs[ip] = true
             }

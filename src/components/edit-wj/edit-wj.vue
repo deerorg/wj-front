@@ -32,7 +32,7 @@
                                             {{op.content}}
                                         </span>
                                         <span v-if="op.optionType=='2'">
-                                            <img :src="_imgDownload(op.img)" class="opimg" @click="magnifyImg(op.img)">
+                                            <img :src="op.img" class="opimg" @click="magnifyImg(op.img)">
                                         </span>
                                     </el-radio>
                                 </el-radio-group>
@@ -213,15 +213,15 @@ export default {
         },
         modifySingle(queinfor){
             for(let i = 0; i<this.wj.testList.length; i++) {
-                console.log(this.wj.testList[i].id)
+              //  console.log(this.wj.testList[i].id)
                 if(this.wj.testList[i].id === queinfor.id) {
                     this.wj.testList[i] = queinfor
-                    console.log(this.wj.testList[i])
+                  //  console.log(this.wj.testList[i])
                     return
                 }
             }
         },
-        _imgDownload (imgurl) {
+        _imgDownload (imgurl) { // 根据图片名称下载base64，但是性能差而且返回的是一个对象而不是base64的结果
             // let imgdata
             // let getimg = async function () {
             //     imgdata  = await imgDownload(getId(), imgurl)

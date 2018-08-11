@@ -86,7 +86,7 @@ export default {
                     this.total = res.data.total
                     this.totalpages = res.data.pages
                     this.answerList = res.data.list
-                    console.log(this.answerList)
+                    // console.log(this.answerList)
                 }
             })
         },

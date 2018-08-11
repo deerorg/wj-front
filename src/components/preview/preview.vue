@@ -83,7 +83,7 @@ export default {
             let screenH = document.documentElement.clientHeight || document.body.clientHeight
             let headH = document.getElementsByClassName("header")[0].offsetHeight
             let h = screenH - headH - 2;
-            console.log(h)
+            // console.log(h)
             document.getElementsByClassName("edit-area")[0].style.minHeight = h + 'px' 
         },
         magnifyImg(data){

@@ -121,7 +121,6 @@ export default {
                // 退出并回到主页及刷新及删除存储的数据
                 let id = getId()
                 logout(id).then((res) => {
-                    console.log(res)
                     if(res.data === null && res.success) {
                         deleUser()
                         this.$router.push('/')

@@ -224,7 +224,7 @@ export default {
                 if (valid) {
                     let obj = getUserInfor()
                     obj.email = this.emailForm.email
-                    console.log(obj)
+                    // console.log(obj)
                     updataInfor(obj).then((res) => {
                         if(res.data === null && res.success) {
                             this.dialogFormchangEmail = false

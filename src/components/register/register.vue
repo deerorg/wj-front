@@ -139,14 +139,11 @@ export default {
             this.$refs.registerForm.validate((valid) => {
             if (valid) {
                 this.registering = true
-                console.log(this.registerForm)
-               // this.registerForm.password = md5(this.registerForm.password)
                 let obj = {}
                 for(let i in this.registerForm) {
                     obj[i] = this.registerForm[i]
                 }
                 register(obj).then((res) => {
-                    console.log(res)
                     this.registering = false
                     const { success, msg, data } = res
                     if (success) {
